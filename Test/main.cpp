@@ -2,7 +2,8 @@
 #include <Arduino.h>
 #include "SH1106.h"
 
-SH1106 lcd;
+SH1106_I2C oled_interface(0x78);
+SH1106 oled(oled_interface, 128, 8, 0);
 
 
 
@@ -11,7 +12,7 @@ void setup() {
     Serial.println("Inizio");
 
 
-    lcd.init();
+    oled.init();
 
     uint8_t empty[132] =  {};
     uint8_t full[135] =  {
@@ -30,13 +31,13 @@ void setup() {
         0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
         0x18,0x18,0x18,0x18,0x18,0x18,0x18,0xFF,  0xE7,0x81,
         0xE7,0x81,0xE7,0x81,0xE7};
-        lcd.writeData(1,0,empty,132);
+        oled.writeData(1,0,empty,132);
         delay(3000);
-    lcd.writeData(1,50,full,132);
+    oled.writeData(1,50,full,132);
     delay(3000);
-    lcd.writeData(2,0,empty,132);
+    oled.writeData(2,0,empty,132);
     delay(3000);
-    lcd.writeData(2,0,full,132);
+    oled.writeData(2,0,full,132);
 
 
     /*
