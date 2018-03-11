@@ -10,50 +10,71 @@ void setup() {
     Serial.begin(9600);
     Serial.println("Inizio");
 
+
     lcd.init();
 
+    uint8_t empty[132] =  {};
+    uint8_t full[135] =  {
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
 
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
+        0x18,0x18,0x18,0x18,0x18,0x18,0x18,0xFF,  0xE7,0x81,
+        0xE7,0x81,0xE7,0x81,0xE7};
+        lcd.writeData(1,0,empty,132);
+        delay(3000);
+    lcd.writeData(1,50,full,132);
+    delay(3000);
+    lcd.writeData(2,0,empty,132);
+    delay(3000);
+    lcd.writeData(2,0,full,132);
+
+
+    /*
+    lcd.i2c.start();
+    lcd.i2c.send(0x78);
+    lcd.i2c.send(0x0);
+    lcd.i2c.send(0xb0);
+    lcd.i2c.send(0x10);
+    lcd.i2c.send(0x2);
+    lcd.i2c.send(0x40);
+    lcd.i2c.send(0xe3);
+    //lcd.i2c.stop();
+    uint8_t d = TWDR;
+    lcd.i2c.start();
+    lcd.i2c.send(0x79);
+    for(int i = 0; i < 5; i ++) Serial.println(lcd.i2c.read(0), HEX);
+    lcd.i2c.stop();
+    */
+    /*
+    lcd.pageAddr(4);
+    lcd.columnAddr(85);
+    lcd.rmwBegin();
+    int i = 10; while(i--) {
+    lcd.i2c.start();
+    lcd.i2c.addrRead();
+    Serial.print(lcd.i2c.read(0));
+    Serial.print(" ");
+    Serial.print(lcd.i2c.read(1));
+    lcd.i2c.stop();
+    lcd.i2c.start();
+    lcd.i2c.addrWrite();
+    lcd.i2c.controlByte(true,false);
+    lcd.i2c.send(0xAA);
+    lcd.i2c.stop();
+}
+lcd.rmwEnd();
+*/
 }
 void loop() {
-    Serial.println();
-    Serial.println("Contrast");
-    delay(2000);
-    for(int i = 255; i; i--) {
-        lcd.contrast(i);
-        Serial.print(i); Serial.print(" ");
-        delay(30);
-    }
 
-    Serial.println();Serial.println();Serial.println();
-    Serial.println("Flip");
-    delay(2000);
-    for(int i = 4; i; i--) {
-        lcd.flipVertically(i%2);
-        delay(500);
-
-    }
-
-    Serial.println();Serial.println();Serial.println();
-    Serial.println("reverse");
-    delay(2000);
-    for(int i = 4; i; i--) {
-        lcd.reverse(i%2);
-        delay(500);
-    }
-
-    Serial.println();Serial.println();Serial.println();
-    Serial.println("voltage");
-    delay(2000);
-    for(int i = 4; i; i--) {
-        lcd.pumpVoltage0123(i);
-        delay(500);
-    }
-
-    Serial.println();Serial.println();Serial.println();
-    Serial.println("segment remap");
-    delay(2000);
-    for(int i = 4; i; i--) {
-        lcd.segmentRemap(i%2);
-        delay(500);
-    }
 }

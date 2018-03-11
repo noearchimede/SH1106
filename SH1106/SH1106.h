@@ -6,22 +6,34 @@
 
 class SH1106 {
 
-public:
-
-
-
-
 
 public:
+
+    // ### Constructors ### //
+
     SH1106() : i2c(0x78, true, 100000) {}
 
 
-    // ############################ SH1106 COMMANDS ############################
+    // ### Typical commands ### //
+
+    //! Initialize display
+    void init();
+
+    //! Turn on
+    void turnOn();
+    //! Turn off
+    void turnOff();
+
+    //! Write an array of bytes on the display
+    /*!
+    */
+    void writeData(uint8_t page, uint8_t column, uint8_t *data, uint8_t lenght);
+
+    // ------------------------ SH1106 COMMANDS --------------------------------
     // Each function sets a parameter of the SH1106 controller. For detailed
     // information about each setting refer to the datasheet (available e.g.
     // here: http://www.allshore.com/pdf/SH1106.pdf).
     // The numbres in comment refer to the command number in the datasheet
-
     void   columnAddr         (uint8_t col);                          // 1, 2
     void   pumpVoltage0123    (uint8_t level0123);                    // 3
     void   startLine          (uint8_t line);                         // 4
@@ -41,29 +53,38 @@ public:
     void   disPreChargeTime   (uint8_t regVal);                       // 16
     void   comConfiguration   (bool sequential);                      // 17
     void   comVoltage         (uint8_t regValue);                     // 18
-    void   rmwStart           (void);                                 // 19
+    void   rmwBegin           (void);                                 // 19
     void   rmwEnd             (void);                                 // 20
     void   nop                (void);                                 // 21
+    // -------------------------------------------------------------------------
 
-
-    uint8_t readStatus();
     bool isEnabled();
     bool isBusy();
 
+    uint8_t readStatus();
+
     void sendCommand(uint8_t command);
     void transferCommand(uint8_t command);
-    void transferRAM(uint8_t data);
-    void init();
+    void writeRAM(uint8_t data[], uint8_t length);
+
+    uint8_t displayWidth;
+    uint8_t displayPages;
 
 
     // Low level functions to communicate with an SH1106 chip via i2c
-    class I2C {
-    public:
+    class SH1106_i2c_driver {
+
         // Constructor parameters:
         //  - address:            display i2c address
         //  - useInternalPullup:  use internal pullups as i2c bus pullup resistors
         //  - frequency:          i2c bus transmission frequency (SCL)
         I2C (uint8_t address, bool useInternalPullup, uint32_t frequency);
+
+        // Returns true if the device at `address` responds
+        bool checkConnection();
+
+    private:
+
 
         // Initialize the i2c interface
         void    init();
@@ -91,10 +112,7 @@ public:
         // Read a byte of data
         uint8_t read(bool isLastByte);
 
-        // Returns true if the device at `address` responds
-        bool checkConnection();
 
-    private:
 
         uint8_t address;
         const bool useInternalPullup;

@@ -23,40 +23,30 @@ void SH1106::init()
     startLine(0);
     pageAddr(0);
     displayEnable(true);
-    /*
-    i2c.start();
-    i2c.addrWrite();
-    i2c.controlByte(true,true);
-    i2c.send(0xAE); // Turn display off
-    i2c.send(0xd5); // Set display clock divider ...
-    i2c.send(0x80); // ...
-    i2c.send(0x8d); // Set charge pump ...
-    i2c.send(0x14); // ...
-    i2c.send(0x20); // Set memory mode ...
-    i2c.send(0x00); // ...
-    i2c.send(0xA1); // Set segment remap
-    i2c.send(0xC8); // Set common output scan direction
-    i2c.send(0xDA); // Set common pads configuration ...
-    i2c.send(0x12); // ...
-    i2c.send(0xA8); // Set multiplex ...
-    i2c.send(0x3f); // ... to 0
-    i2c.send(0xD3); // Set offset ...
-    i2c.send(0x00); // ... to the top of the screen
-    i2c.send(0x40); // Set line to 0
-    i2c.send(0xB0); // Set page to 0
-    i2c.send(0x02); // Set collom lower to 2
-    i2c.send(0x10); // Set collom upper to 0
-    i2c.send(0xAF); // Turn screen on
-    i2c.stop();*/
+
 }
 
-/*
-void SH1106::drawPage(uint8_t page, uint8_t buffer[]) {
-i2c.start();
-i2c.addrWrite();
-i2c.controlByte(bool last, bool command)
+void SH1106::writeData(uint8_t page, uint8_t column, uint8_t data[], uint8_t length) {
+    // check input
+    if(page >= displayPages || column >= displayWidth) return;
+    // "cut" data on max screen width
+    if(length > displayWidth - column) length = displayWidth - column;
+    // write data
+    pageAddr(page);
+    columnAddr(column);
+    writeRAM(data, length);
+}
 
-}*/
+
+void SH1106::writeRAM(uint8_t data[], uint8_t length) {
+    i2c.start();
+    i2c.addrWrite();
+    i2c.controlByte(true, false);
+    for(uint8_t i = 0; i < length; i++) {
+        i2c.send(data[i]);
+    }
+    i2c.stop();
+}
 
 
 void SH1106::sendCommand(uint8_t command) {
@@ -81,7 +71,7 @@ uint8_t SH1106::readStatus() {
 
 bool SH1106::isEnabled() {
     uint8_t status = readStatus();
-    return (status & 0x40);
+    return !(status & 0x40);
 }
 
 bool SH1106::isBusy() {
@@ -188,7 +178,7 @@ void SH1106::comVoltage(uint8_t regValue) {
     sendCommand(regValue);
 }
 // 19
-void SH1106::rmwStart() {
+void SH1106::rmwBegin() {
     sendCommand(0xE0);
 }
 // 20

@@ -90,8 +90,9 @@ uint8_t SH1106::I2C::read(bool isLastByte) {
     // else send an ACK
     else TWCR |= (1<<TWEA);
     // activate bus
-    TWCR = (1<<TWINT) | (1<<TWEN);
+    TWCR |= (1<<TWINT) | (1<<TWEN);
     // wait for data to be sent by slave
     while(!(TWCR & (1<<TWINT)));
+    // return received data
     return TWDR;
 }
