@@ -130,11 +130,9 @@ void SH1106_I2C::send(uint8_t data) {
 
 uint8_t SH1106_I2C::read(bool isLastByte) {
     // If this byte is the last one to be received, send a NACK after getting it
-    if(isLastByte) TWCR &= ~(1<<TWEA);
     // else send an ACK
-    else TWCR |= (1<<TWEA);
-    // activate bus
-    TWCR |= (1<<TWINT) | (1<<TWEN);
+    if(isLastByte) TWCR = (1<<TWINT) | (1<<TWEN);
+    else TWCR = (1<<TWEA) | (1<<TWINT) | (1<<TWEN);
     // wait for data to be sent by slave
     while(!(TWCR & (1<<TWINT)));
     // return received data

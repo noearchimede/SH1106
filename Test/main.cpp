@@ -2,8 +2,8 @@
 #include <Arduino.h>
 #include "SH1106.h"
 
-SH1106_I2C oled_interface(0x78);
-SH1106 oled(oled_interface, 128, 8, 0);
+
+SH1106 oled(128, 8, 0, 0x78, true);
 
 
 
@@ -11,8 +11,15 @@ void setup() {
     Serial.begin(9600);
     Serial.println("Inizio");
 
-
+    Serial.println("1");
     oled.init();
+    Serial.println("2");
+
+    Serial.println("3");
+    oled.driver.pageAddr(3);
+    Serial.println("4");
+    oled.driver.columnAddr(100);
+    Serial.println("5");
 
     uint8_t empty[132] =  {};
     uint8_t full[135] =  {
@@ -31,50 +38,50 @@ void setup() {
         0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18,
         0x18,0x18,0x18,0x18,0x18,0x18,0x18,0xFF,  0xE7,0x81,
         0xE7,0x81,0xE7,0x81,0xE7};
-        oled.writeData(1,0,empty,132);
+        oled.driver.writeData(1,0,empty,132);
         delay(3000);
-    oled.writeData(1,50,full,132);
-    delay(3000);
-    oled.writeData(2,0,empty,132);
-    delay(3000);
-    oled.writeData(2,0,full,132);
+        oled.driver.writeData(1,50,full,132);
+        delay(3000);
+        oled.driver.writeData(2,0,empty,132);
+        delay(3000);
+        oled.driver.writeData(2,0,full,132);
 
-
-    /*
-    lcd.i2c.start();
-    lcd.i2c.send(0x78);
-    lcd.i2c.send(0x0);
-    lcd.i2c.send(0xb0);
-    lcd.i2c.send(0x10);
-    lcd.i2c.send(0x2);
-    lcd.i2c.send(0x40);
-    lcd.i2c.send(0xe3);
-    //lcd.i2c.stop();
-    uint8_t d = TWDR;
-    lcd.i2c.start();
-    lcd.i2c.send(0x79);
-    for(int i = 0; i < 5; i ++) Serial.println(lcd.i2c.read(0), HEX);
-    lcd.i2c.stop();
+        Serial.println("6");
+        /*
+        lcd.i2c.start();
+        lcd.i2c.send(0x78);
+        lcd.i2c.send(0x0);
+        lcd.i2c.send(0xb0);
+        lcd.i2c.send(0x10);
+        lcd.i2c.send(0x2);
+        lcd.i2c.send(0x40);
+        lcd.i2c.send(0xe3);
+        //lcd.i2c.stop();
+        uint8_t d = TWDR;
+        lcd.i2c.start();
+        lcd.i2c.send(0x79);
+        for(int i = 0; i < 5; i ++) Serial.println(lcd.i2c.read(0), HEX);
+        lcd.i2c.stop();
+        */
+        /*
+        lcd.pageAddr(4);
+        lcd.columnAddr(85);
+        lcd.rmwBegin();
+        int i = 10; while(i--) {
+        lcd.i2c.start();
+        lcd.i2c.addrRead();
+        Serial.print(lcd.i2c.read(0));
+        Serial.print(" ");
+        Serial.print(lcd.i2c.read(1));
+        lcd.i2c.stop();
+        lcd.i2c.start();
+        lcd.i2c.addrWrite();
+        lcd.i2c.controlByte(true,false);
+        lcd.i2c.send(0xAA);
+        lcd.i2c.stop();
+    }
+    lcd.rmwEnd();
     */
-    /*
-    lcd.pageAddr(4);
-    lcd.columnAddr(85);
-    lcd.rmwBegin();
-    int i = 10; while(i--) {
-    lcd.i2c.start();
-    lcd.i2c.addrRead();
-    Serial.print(lcd.i2c.read(0));
-    Serial.print(" ");
-    Serial.print(lcd.i2c.read(1));
-    lcd.i2c.stop();
-    lcd.i2c.start();
-    lcd.i2c.addrWrite();
-    lcd.i2c.controlByte(true,false);
-    lcd.i2c.send(0xAA);
-    lcd.i2c.stop();
-}
-lcd.rmwEnd();
-*/
 }
 void loop() {
 

@@ -1,0 +1,75 @@
+SH1106_I2C	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^SH1106_I2C::SH1106_I2C (uint8_t address, bool useInternalPullup, uint32_t frequency) :$/;"	function	line:11	class:SH1106_I2C	signature:(uint8_t address, bool useInternalPullup, uint32_t frequency)
+init	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::init() {$/;"	function	line:20	class:SH1106_I2C	signature:()
+checkConnection	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^bool SH1106_I2C::checkConnection() {$/;"	function	line:37	class:SH1106_I2C	signature:()
+sendCommand	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::sendCommand(uint8_t command) {$/;"	function	line:52	class:SH1106_I2C	signature:(uint8_t command)
+writeRAM	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::writeRAM(uint8_t data[], uint8_t length) {$/;"	function	line:61	class:SH1106_I2C	signature:(uint8_t data[], uint8_t length)
+isEnabled	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^bool SH1106_I2C::isEnabled() {$/;"	function	line:73	class:SH1106_I2C	signature:()
+isBusy	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^bool SH1106_I2C::isBusy() {$/;"	function	line:82	class:SH1106_I2C	signature:()
+start	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::start() {$/;"	function	line:94	class:SH1106_I2C	signature:()
+stop	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::stop() {$/;"	function	line:100	class:SH1106_I2C	signature:()
+addrWrite	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::addrWrite() {$/;"	function	line:108	class:SH1106_I2C	signature:()
+addrRead	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::addrRead() {$/;"	function	line:113	class:SH1106_I2C	signature:()
+send	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::send(uint8_t data) {$/;"	function	line:119	class:SH1106_I2C	signature:(uint8_t data)
+read	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^uint8_t SH1106_I2C::read(bool isLastByte) {$/;"	function	line:131	class:SH1106_I2C	signature:(bool isLastByte)
+controlByte	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_I2C.cpp	/^void SH1106_I2C::controlByte(bool last, bool command) {$/;"	function	line:145	class:SH1106_I2C	signature:(bool last, bool command)
+SH1106_interfaces_h	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^#define SH1106_interfaces_h$/;"	macro	line:29
+SH1106_interface	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_interface {$/;"	class	line:35
+SH1106_I2C	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_I2C : public SH1106_interface {$/;"	class	line:69
+address	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint8_t address;$/;"	member	line:107	class:SH1106_I2C
+useInternalPullup	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const bool useInternalPullup;$/;"	member	line:108	class:SH1106_I2C
+frequency	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint32_t frequency;$/;"	member	line:109	class:SH1106_I2C
+SH1106_interfaces_h	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^#define SH1106_interfaces_h$/;"	macro	line:29
+SH1106_interface	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_interface {$/;"	class	line:35
+SH1106_I2C	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_I2C : public SH1106_interface {$/;"	class	line:69
+address	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint8_t address;$/;"	member	line:107	class:SH1106_I2C
+useInternalPullup	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const bool useInternalPullup;$/;"	member	line:108	class:SH1106_I2C
+frequency	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint32_t frequency;$/;"	member	line:109	class:SH1106_I2C
+SH1106_interfaces_h	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^#define SH1106_interfaces_h$/;"	macro	line:29
+SH1106_interface	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_interface {$/;"	class	line:35
+SH1106_I2C	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_I2C : public SH1106_interface {$/;"	class	line:69
+address	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint8_t address;$/;"	member	line:107	class:SH1106_I2C
+useInternalPullup	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const bool useInternalPullup;$/;"	member	line:108	class:SH1106_I2C
+frequency	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint32_t frequency;$/;"	member	line:109	class:SH1106_I2C
+SH1106_interfaces_h	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^#define SH1106_interfaces_h$/;"	macro	line:29
+SH1106_interface	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_interface {$/;"	class	line:35
+SH1106_I2C	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_I2C : public SH1106_interface {$/;"	class	line:69
+address	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint8_t address;$/;"	member	line:107	class:SH1106_I2C
+useInternalPullup	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const bool useInternalPullup;$/;"	member	line:108	class:SH1106_I2C
+frequency	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint32_t frequency;$/;"	member	line:109	class:SH1106_I2C
+SH1106_interfaces_h	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^#define SH1106_interfaces_h$/;"	macro	line:29
+SH1106_interface	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_interface {$/;"	class	line:35
+SH1106_I2C	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^class SH1106_I2C : public SH1106_interface {$/;"	class	line:69
+address	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint8_t address;$/;"	member	line:107	class:SH1106_I2C
+useInternalPullup	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const bool useInternalPullup;$/;"	member	line:108	class:SH1106_I2C
+frequency	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_interfaces.hpp	/^    const uint32_t frequency;$/;"	member	line:109	class:SH1106_I2C
+SH1106	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106.cpp	/^SH1106::SH1106(uint8_t width, uint8_t pages, uint8_t offset, uint8_t i2cAddress, bool i2cUseInternalPullup) :$/;"	function	line:6	class:SH1106	signature:(uint8_t width, uint8_t pages, uint8_t offset, uint8_t i2cAddress, bool i2cUseInternalPullup)
+init	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106.cpp	/^void SH1106::init() {$/;"	function	line:12	class:SH1106	signature:()
+drawPageArray	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106.cpp	/^void SH1106::drawPageArray(uint8_t page, uint8_t column, uint8_t data [], uint8_t length) {$/;"	function	line:17	class:SH1106	signature:(uint8_t page, uint8_t column, uint8_t data [], uint8_t length)
+setup	/Users/noe/Documents/Robot/Librerie/SH1106/Test/main.cpp	/^void setup() {$/;"	function	line:10	signature:()
+loop	/Users/noe/Documents/Robot/Librerie/SH1106/Test/main.cpp	/^void loop() {$/;"	function	line:86	signature:()
+SH1106_driver	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^SH1106_driver::SH1106_driver(SH1106_I2C i2c, uint8_t width, uint8_t pages, uint8_t horizontalOffset) :$/;"	function	line:7	class:SH1106_driver	signature:(SH1106_I2C i2c, uint8_t width, uint8_t pages, uint8_t horizontalOffset)
+init	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^bool SH1106_driver::init()$/;"	function	line:16	class:SH1106_driver	signature:()
+writeData	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::writeData(uint8_t page, uint8_t column, uint8_t data[], uint8_t length) {$/;"	function	line:43	class:SH1106_driver	signature:(uint8_t page, uint8_t column, uint8_t data[], uint8_t length)
+checkConnection	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^bool SH1106_driver::checkConnection() {$/;"	function	line:57	class:SH1106_driver	signature:()
+columnAddr	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::columnAddr(uint8_t col) {$/;"	function	line:66	class:SH1106_driver	signature:(uint8_t col)
+pumpVoltage0123	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::pumpVoltage0123(uint8_t level0123) {$/;"	function	line:71	class:SH1106_driver	signature:(uint8_t level0123)
+startLine	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::startLine(uint8_t line) {$/;"	function	line:75	class:SH1106_driver	signature:(uint8_t line)
+contrast	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::contrast(uint8_t contrast) {$/;"	function	line:79	class:SH1106_driver	signature:(uint8_t contrast)
+segmentRemap	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::segmentRemap(bool reverse) {$/;"	function	line:84	class:SH1106_driver	signature:(bool reverse)
+setEntireDisplayOn	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::setEntireDisplayOn(bool enable) {$/;"	function	line:88	class:SH1106_driver	signature:(bool enable)
+reverse	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::reverse(bool enable) {$/;"	function	line:92	class:SH1106_driver	signature:(bool enable)
+multiplex	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::multiplex(uint8_t ratio) {$/;"	function	line:96	class:SH1106_driver	signature:(uint8_t ratio)
+dcDcEnable	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::dcDcEnable(bool enable) {$/;"	function	line:101	class:SH1106_driver	signature:(bool enable)
+displayEnable	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::displayEnable(bool enable) {$/;"	function	line:109	class:SH1106_driver	signature:(bool enable)
+pageAddr	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::pageAddr(uint8_t page) {$/;"	function	line:113	class:SH1106_driver	signature:(uint8_t page)
+flipVertically	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::flipVertically(bool flip) {$/;"	function	line:118	class:SH1106_driver	signature:(bool flip)
+displayOffest	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::displayOffest(uint8_t offset) {$/;"	function	line:122	class:SH1106_driver	signature:(uint8_t offset)
+clockFrequency	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::clockFrequency(uint8_t frequency, uint8_t divisor) {$/;"	function	line:127	class:SH1106_driver	signature:(uint8_t frequency, uint8_t divisor)
+clockFrequency	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::clockFrequency(uint8_t regVal) {$/;"	function	line:132	class:SH1106_driver	signature:(uint8_t regVal)
+disPreChargeTime	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::disPreChargeTime(uint8_t pre, uint8_t dis) {$/;"	function	line:137	class:SH1106_driver	signature:(uint8_t pre, uint8_t dis)
+disPreChargeTime	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::disPreChargeTime(uint8_t regVal) {$/;"	function	line:144	class:SH1106_driver	signature:(uint8_t regVal)
+comConfiguration	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::comConfiguration(bool sequential) {$/;"	function	line:149	class:SH1106_driver	signature:(bool sequential)
+comVoltage	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::comVoltage(uint8_t regValue) {$/;"	function	line:154	class:SH1106_driver	signature:(uint8_t regValue)
+rmwBegin	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::rmwBegin() {$/;"	function	line:159	class:SH1106_driver	signature:()
+rmwEnd	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::rmwEnd() {$/;"	function	line:163	class:SH1106_driver	signature:()
+nop	/Users/noe/Documents/Robot/Librerie/SH1106/SH1106/SH1106_driver.cpp	/^void SH1106_driver::nop() {$/;"	function	line:167	class:SH1106_driver	signature:()
