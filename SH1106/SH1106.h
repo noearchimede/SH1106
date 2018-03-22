@@ -19,7 +19,7 @@ public:
         @param i2cAddress   Address of the display on the i2c bus
         @param i2i2cUseInternalPullup  Use internal I/O pin pullups as i2c pullups
     */
-    SH1106(uint8_t width, uint8_t pages, uint8_t offset, uint8_t i2cAddress, bool i2cUseInternalPullup);
+    SH1106(uint8_t width, uint8_t pages, uint8_t offset);
 
 
     //! Initialize the SH1106

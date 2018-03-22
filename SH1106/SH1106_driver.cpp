@@ -4,8 +4,8 @@
 #include "SH1106_driver.hpp"
 
 
-SH1106_driver::SH1106_driver(SH1106_I2C i2c, uint8_t width, uint8_t pages, uint8_t horizontalOffset) :
-interface(i2c),
+SH1106_driver::SH1106_driver(uint8_t width, uint8_t pages, uint8_t horizontalOffset) :
+interface(0x78, true, 100000),
 screenWidth((width < 132) ? width : 132),
 screenPages((pages < 8) ? pages : 8),
 screenOffset(horizontalOffset)
@@ -15,9 +15,9 @@ screenOffset(horizontalOffset)
 
 bool SH1106_driver::init()
 {
-    Serial.print("*");
+
     interface.init();
-    Serial.print("*");
+
     if(!interface.checkConnection()) {
         return false;
     }
@@ -111,8 +111,7 @@ void SH1106_driver::displayEnable(bool enable) {
 }
 // 12
 void SH1106_driver::pageAddr(uint8_t page) {
-    Serial.print("*");
-    //interface.sendCommand(0xB0 | (page & 0x7));
+    interface.sendCommand(0xB0 | (page & 0x7));
 }
 // 13
 void SH1106_driver::flipVertically(bool flip) {

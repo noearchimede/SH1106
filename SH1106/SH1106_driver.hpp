@@ -31,7 +31,7 @@ public:
                             sometimes 2 for 128 pixel screens).
 
     */
-    SH1106_driver(SH1106_I2C i2c, uint8_t width = 132, uint8_t pages = 8, uint8_t horizontalOffset = 0);
+    SH1106_driver(uint8_t width = 132, uint8_t pages = 8, uint8_t horizontalOffset = 0);
 
     // we may create other constructors with different interfaces
 
@@ -94,7 +94,7 @@ public:
 private:
 
     // Communication interface handler
-    SH1106_interface& interface;
+    SH1106_I2C interface;
 
     // width of the display, usually 128, sometimes 132
     uint8_t screenWidth;

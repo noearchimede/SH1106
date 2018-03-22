@@ -3,9 +3,11 @@
 /*! @fle Implementation of the SH1106 class
 */
 
-SH1106::SH1106(uint8_t width, uint8_t pages, uint8_t offset, uint8_t i2cAddress, bool i2cUseInternalPullup) :
-driver(SH1106_I2C(i2cAddress,i2cUseInternalPullup, 100000), width, pages, offset)
-{}
+SH1106::SH1106(uint8_t width, uint8_t pages, uint8_t offset)
+:
+driver(width, pages, offset)
+{
+}
 
 
 
