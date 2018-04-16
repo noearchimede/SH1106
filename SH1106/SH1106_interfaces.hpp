@@ -44,6 +44,8 @@ public:
     virtual void sendCommand(uint8_t command)               = 0;
     //! Write an array of data into the RAM of the SH1106
     virtual void writeRAM(uint8_t data[], uint8_t length)   = 0;
+    //! Write a byte of data into the RAM of the SH1106
+    virtual void writeRAM(uint8_t data)                     = 0;
     //! Check whether the display is on or off
     virtual bool isEnabled()                                = 0;
     //! Check whether the device is busy (i.e. it is executing a command)
@@ -94,6 +96,11 @@ public:
     @param length   length of the data array
     */
     void writeRAM(uint8_t data[], uint8_t length);
+    //! Write a byte of data into the RAM of the SH1106 chip
+    /*! @note This function contains one single i2c transaction
+    @param data     byte to send
+    */
+    void writeRAM(uint8_t data);
 
     //! Check whether the display is on or off
     bool isEnabled();

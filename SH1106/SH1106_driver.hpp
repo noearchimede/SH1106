@@ -31,7 +31,7 @@ public:
                             sometimes 2 for 128 pixel screens).
 
     */
-    SH1106_driver(uint8_t width = 132, uint8_t pages = 8, uint8_t horizontalOffset = 0);
+    SH1106_driver(uint8_t pages = 8, uint8_t width = 132, uint8_t horizontalOffset = 0);
 
     // we may create other constructors with different interfaces
 
@@ -54,6 +54,17 @@ public:
         @param length   length of the data array
     */
     void writeData(uint8_t page, uint8_t column, uint8_t data[], uint8_t lenght);
+
+    //! Write a single byte on the display
+    /*!
+        @param page     page on wich the array will be written
+        @param column   column on wich the first by will be written, then the
+                        column address will be incremented until (column+lenght)
+                        is reached
+        @param data     bytes to be written
+    */
+    void writeData(uint8_t page, uint8_t column, uint8_t data);
+
 
     //! Chack whether an SH1106 is connected to the microcontroller
     bool checkConnection();

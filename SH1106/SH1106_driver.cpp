@@ -4,7 +4,7 @@
 #include "SH1106_driver.hpp"
 
 
-SH1106_driver::SH1106_driver(uint8_t width, uint8_t pages, uint8_t horizontalOffset) :
+SH1106_driver::SH1106_driver(uint8_t pages, uint8_t width, uint8_t horizontalOffset) :
 interface(0x78, true, 100000),
 screenWidth((width < 132) ? width : 132),
 screenPages((pages < 8) ? pages : 8),
@@ -52,6 +52,19 @@ void SH1106_driver::writeData(uint8_t page, uint8_t column, uint8_t data[], uint
     columnAddr(column);
     interface.writeRAM(data, length);
 }
+
+
+void SH1106_driver::writeData(uint8_t page, uint8_t column, uint8_t data) {
+    // check input
+    if(page >= screenPages || column >= screenWidth) return;
+    // subtract horizontal offset
+    column -= screenOffset;
+    // write data
+    pageAddr(page);
+    columnAddr(column);
+    interface.writeRAM(data);
+}
+
 
 
 bool SH1106_driver::checkConnection() {

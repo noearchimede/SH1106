@@ -68,6 +68,14 @@ void SH1106_I2C::writeRAM(uint8_t data[], uint8_t length) {
     stop();
 }
 
+void SH1106_I2C::writeRAM(uint8_t data) {
+    start();
+    addrWrite();
+    controlByte(true, false);
+    send(data);
+    stop();
+}
+
 
 
 bool SH1106_I2C::isEnabled() {
