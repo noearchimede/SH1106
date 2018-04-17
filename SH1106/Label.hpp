@@ -22,6 +22,65 @@ need to preserve (thus know) some content when overwriting).
 Since there isn't much available space in a single 8-bit page, the text size
 and font style are fixed.
 
+The text is printed using the `write()` function, wich takes either a string
+literal or a single NULL-terminated char array either a char array and its
+lenght as second parameter.
+The write function allows to write ASCII printable characters (i.e. ASCII
+characters 0x20 to 0x7E) as well as some special characters, obtained by
+writing the following two character sequences.
+The backslash '\' is used as escape character. Unless the user uses raw string
+literals, the escape character must be written twice to bass it to the class
+as a single backslash is interpreted by the compiler: e.g. write "\\^" to get
+the escape sequence "\^" (up arrow).
+
+| "Action" characters                        ||
+|------|--------------------------------------|
+| \n   | newline                              |
+| \t   | tab                                  |
+| \r   | carriage return; clears current line |
+
+| Accents ||
+|------|---|
+| a`   | à |
+| e`   | è |
+| i`   | ì |
+| o`   | ò |
+| u`   | ù |
+
+| Arrows            ||
+|------|-------------|
+| \^   | UP          |
+| -^   | UP RIGHT    |
+| ->   | RIGHT       |
+| -v   | DOWN RIGHT  |
+| \v   | DOWN        |
+| v-   | DOWN LEFT   |
+| <-   | LEFT        |
+| ^-   | UP LEFT     |
+
+_Note: up sign is a circumflex accent, down is a lower case 'v'_
+
+| Digits at exponent position                                       ||
+|--------------------------------------------------------------------|
+| ^x   | where x is any number from 0 to 9                           |
+| ^x^y | two or more exponent digits need repeated escape sequences  |
+
+| Other special characters            ||
+|-----|--------------------------------|
+| ^o  | (lower case 'o') degree symbol |
+| \c  | copyright symbol ©             |
+
+
+| Escape character             ||
+|-----|-------------------------|
+| \\  | write it twice to print |
+
+
+The escape character may be used within any of the above sequences to tell the
+writing function to print them as they are (e.g. "^o" prints "°" while "^\o"
+prints "^o" and "^\\o" prints "^\o").
+
+
 */
 class Label {
 
@@ -105,7 +164,7 @@ private:
     // characters. If the parameter `escaped` is true the two characters were
     // joined to produce a single output (e.g. 'e' and '`' will result in 'è').
     // If the character is a tab, newline or space the `move` parameter will
-    // have a nopn-zero value according to the above enum.
+    // have a non-zero value according to the above enum.
     geFont::Char readString(bool& escaped, MoveType& move, char char1, char char2)
 
     // Get the width in pixels of a word with charCount characters
