@@ -5,11 +5,13 @@
 
 
 
-Label::Label(uint8_t width, uint8_t height, uint8_t startCol, uint8_t startPage)
+Label::Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage)
 :
 // Make the frame two bytes less wide to allow a one-pixel margin on each side
-frame(width - 2, height, startCol + 1, startPage),
-cursor(frame),
+driver(display),
+frame((width - (2 * margin)), height, (startColumn + margin), startPage),
+clearFrame(width, height, startColumn, startPage),
+cursor(frame)
 {
 
 }
@@ -24,7 +26,7 @@ void Label::clear() {
 
 
 
-bool Label::write(char text[]) {
+bool Label::write(const char text[]) {
     uint16_t i = 0;
     while(text[i++]);
     return write(text, i);
@@ -65,6 +67,7 @@ bool Label::write(char text[], uint16_t length) {
                 case MoveType::carriageReturn:
                 if(!carriageReturnClear()) return false;
                 break;
+                case MoveType::none: break; // Can't happen
             }
         }
         // else we know that the character has to be interpreted as text
@@ -81,6 +84,12 @@ bool Label::write(char text[], uint16_t length) {
         if(escapeSequence) i++;
         i++;
     }
+    // Print last word
+    if(charsToPrint) {
+        charsToPrint = false;
+        if(!writeWord(text, wordStartIndex, i)) return false;
+    }
+
     return true;
 }
 
@@ -89,8 +98,10 @@ bool Label::write(char text[], uint16_t length) {
 
 
 
-void Label::tab(uint8_t anchor) {
+bool Label::tab(uint8_t anchor) {
     constexpr uint8_t defaultTab = 25;
+
+    if(anchor >= frame.columns) return false;
 
     // calculate tab width
     uint8_t tab;
@@ -104,20 +115,22 @@ void Label::tab(uint8_t anchor) {
             // Just write a space to make sure that the previous word will not
             // be joined up with the next one.
             space();
-            return;
+            return false;
         }
     }
     // default tab
     else tab = defaultTab - (cursor.column % defaultTab);
 
     // Clear the space jumped by the tab
-    if(frame.isInFrame(cursor.column + tab))
-    fill(0x00, cursor.column, cursor.page, (cursor.column + tab), cursor.page);
-    else
-    fill(0x00, cursor.column, cursor.page, 0xFF, cursor.page);
+    bool inFrame = frame.isInFrame(cursor.column + tab);
+    if(inFrame) fill(0x00, cursor.column, cursor.page, (cursor.column + tab), cursor.page);
+    else fill(0x00, cursor.column, cursor.page, 0xFF, cursor.page);
 
     // move the cursor
     cursor.move(tab, true);
+
+    if(inFrame) return true;
+    return false;
 }
 
 
@@ -125,7 +138,7 @@ void Label::tab(uint8_t anchor) {
 
 bool Label::newline() {
     cursor.page++;
-    if(frame.isInFrame(cursor.column, curosor.page)) return true;
+    if(frame.isInFrame(cursor.column, cursor.page)) return true;
     return false;
 }
 
@@ -135,14 +148,18 @@ bool Label::newline() {
 bool Label::carriageReturnClear() {
     fill(0x0,0,cursor.page,0xFF,cursor.page);
     // `fill` moves the cursor to the `begin` position.
+
+    return true; //always
 }
 
 
 
 
-void Label::space() {
+bool Label::space() {
     if(frame.isInFrame(cursor.column + getAsciiCharWidth(' ')))
     writeChar(font.getAscii(' '));
+
+    return true; //always
 }
 
 
@@ -166,35 +183,41 @@ bool Label::moveCursor(uint8_t column, uint8_t page) {
 
 void Label::fill(char data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, uint8_t endPag) {
 
+    // correct the indexing error created by the margin (see e.g. the
+    // constructor to undestand the "problem")
+    if(beginCol >= 0) beginCol += margin;
+    if(endCol >= 0)   endCol += margin; // no, endCol == 0 doesn't make sense
+
+
     // if one of the end parameters is 0xff replace it with its max value
-    if(endPag == 0xFF) endPag = frame.pages - 1;
-    if(endCol == 0xFF) endCol = frame.columns - 1;
+    if(endPag == 0xFF) endPag = clearFrame.pages - 1;
+    if(endCol == 0xFF) endCol = clearFrame.columns - 1;
 
     // if the range is "negative" return
     if(endPag < beginPag) return;
     else if(endPag == beginPag) {
-        if(endCol < startCol) return;
+        if(endCol < beginCol) return;
     }
 
     // clear (part of) the first line
     cursor.page = beginPag;
-    for(int i = beginCol; i < frame.columns; i++) {
+    for(int i = beginCol; i < clearFrame.columns; i++) {
         cursor.column = i;
-        driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), data);
+        driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
     }
     // clear intermediate line(s)
     for(int k = beginPag + 1; k < endPag; k++) {
         cursor.page = k;
-        for(int i = 0; i < frame.columns; i++) {
+        for(int i = 0; i < clearFrame.columns; i++) {
             cursor.column = i;
-            driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), data);
+            driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
         }
     }
     // clear (part of) the last line
-    cursor.setPage(endPag);
+    cursor.page = endPag;
     for(int i = 0; i <= endCol; i++) {
         cursor.column = i;
-        driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), data);
+        driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
     }
 
     cursor.page = beginPag;
@@ -209,7 +232,7 @@ bool Label::writeArray(uint8_t column, uint8_t page, uint8_t data [], uint8_t le
     // cut the array, if needed, to fit in current page
     bool cut = false;
     if(!frame.isInFrame(cursor.column + length)) {
-        lenght = frame.columns - cursor.column;
+        length = frame.columns - cursor.column;
         cut = true;
     }
 
@@ -360,7 +383,7 @@ bool Label::writeWord(char word[], uint16_t firstIndex, uint16_t stopIndex) {
     // "unknown"
 
     // get word width
-    const uint16_t width = getWordWidth(text, wordStartIndex, i);
+    const uint16_t width = getWordWidth(word, firstIndex, stopIndex);
     // check whether it is possible to print it and move the cursor if needed
     if(!cursor.prepare(width)) return false;
 
@@ -421,7 +444,7 @@ Label::Frame::Frame(uint8_t width, uint8_t height, uint8_t xPos, uint8_t yPos) {
 
 
 
-Label::Frame::isInFrame(uint8_t relativeColumn, uint8_t relativePage) {
+bool Label::Frame::isInFrame(uint8_t relativeColumn, uint8_t relativePage) {
     return (relativeColumn < columns && relativePage < pages);
 }
 
@@ -468,7 +491,7 @@ bool Label::Cursor::prepare(uint8_t textWidth) {
     if(column + textWidth < frame.columns) return true;
     // there isn't, try to move to next line but before doing it check if the
     // word would fit in an empty line.
-    if(textWidth > columns) {
+    if(textWidth > frame.columns) {
         // the word is too long and needs to be wrapped at least once.
         // It's characters will be written until reacing the end of the label.
         return true;
@@ -498,7 +521,7 @@ bool Label::Cursor::move(uint8_t steps, bool stopAtNL) {
             return true;
         }
     }
-    // now col + addColumns < totCol
-    col += steps;
+    // now column + steps < totCol
+    column += steps;
     return true;
 }

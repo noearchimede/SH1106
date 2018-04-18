@@ -1,8 +1,8 @@
 /*! @file Header of the SH1106 class
 */
 
-#ifndef SH1106_Label_h
-#define SH1106_Label_h
+#ifndef Label_hpp
+#define Label_hpp
 
 #include <inttypes.h>
 #include "SH1106_driver.hpp"
@@ -87,7 +87,7 @@ class Label {
 public:
 
     //! Consturctor - provides label size and position
-    Label(uint8_t width, uint8_t height, uint8_t startCol, uint8_t startPage);
+    Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage);
 
 
     //! Prints a NULL-TERMINATED string literal or char array on the screen
@@ -133,8 +133,12 @@ public:
 
         This function actually writes some empty bytes, i.e. it will overwrite
         any underlying pixel.
+
+        @return `false`if a custom-defined anchor could not be respoected
+                (because it was out of frame or the cursor was already on its
+                right side) or the tab went out of the frame.
     */
-    void tab(uint8_t anchor = 0);
+    bool tab(uint8_t anchor = 0);
 
     //! Go to the next line
     /*! @return `false` if there isn't any additional line below the current one
@@ -142,13 +146,17 @@ public:
     bool newline();
 
     //! Go to the beginning of current line and clear line
-    void carriageReturnClear();
+    /*! @return This function will always return true.
+    */
+    bool carriageReturnClear();
 
     //! Write a space
     /*! The space will overwrite any previouvsly written characters, but it
-    will be cut if it is at end of a line.
+        will be cut if it is at end of a line.
+
+        @return This function will always return true.
     */
-    void space();
+    bool space();
 
 
     //! Move the cursor to a given location
@@ -190,7 +198,7 @@ public:
                 some bytes were printed.
 
     */
-    void writeArray(uint8_t column, uint8_t page, uint8_t data[], uint8_t length);
+    bool writeArray(uint8_t column, uint8_t page, uint8_t data[], uint8_t length);
 
 
 
@@ -205,8 +213,12 @@ private:
     // backtick as it is used as accent.
     // The escape character can be printed by typing it twice without spacing
     // ('\\\\' or '##').
-    constexpr char escape = '\\'; // backslash
+    static constexpr char escape = '\\'; // backslash
 
+    // Margin on each side of the label in pixels
+    static constexpr unsigned int margin = 1;
+
+    
 
     // ### FUNCTIONS ### //
 
@@ -233,7 +245,7 @@ private:
     // Thus this function should not be called if the character or character
     // sequence is a tab, newline or carriage return. Neither should it be
     // called for spaces, but if it were it would return a fixed width space.
-    geFont::Char getPrintableChar(bool& bothUsed, char char1, char char2 = '\0');
+    PageFont::Char getPrintableChar(bool& bothUsed, char char1, char char2 = '\0');
 
 
     // Get the width in pixels of a word with charCount characters.
@@ -253,7 +265,7 @@ private:
     bool writeWord(char word[], uint16_t firstIndex, uint16_t stopIndex);
 
     // Write a character
-    void writeChar(PageFont::Char c);
+    bool writeChar(PageFont::Char c);
 
     // ### VARIABLES ###
 
@@ -279,10 +291,15 @@ private:
         uint8_t absoluteColumn (uint8_t relativeColumn);
         uint8_t absolutePage (uint8_t relativePage);
     };
+    // frame used for all printing operations
     Frame frame;
-
+    // Slightly wider frame used only by the fill() function, wich is also used
+    // to clear. This frame must be made wider than `frame` in the constructor.
+    Frame clearFrame;
 
     // Text writing cursor
+    // Cursor needs to use the private nested class Frame
+    friend class Cursor;
     struct Cursor {
         Cursor(Label::Frame & frame);
         // Current cursor position
