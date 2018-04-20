@@ -26,16 +26,17 @@ void Label::clear() {
 
 
 
-bool Label::write(const char text[]) {
+bool Label::print(const char text[]) {
     uint16_t i = 0;
-    while(text[i++]);
-    return write(text, i);
+    while(text[i++] != '\0');
+    
+    return print(text, i);
 }
 
 
 
 
-bool Label::write(char text[], uint16_t length) {
+bool Label::print(char text[], uint16_t length) {
 
     uint16_t wordStartIndex = 0;
     bool charsToPrint = false;
@@ -185,9 +186,8 @@ void Label::fill(char data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, 
 
     // correct the indexing error created by the margin (see e.g. the
     // constructor to undestand the "problem")
-    if(beginCol >= 0) beginCol += margin;
-    if(endCol >= 0)   endCol += margin; // no, endCol == 0 doesn't make sense
-
+    if(beginCol > 0 && beginCol != 0xFF) beginCol += margin;
+    if(endCol > 0 && endCol != 0xFF) endCol += margin;
 
     // if one of the end parameters is 0xff replace it with its max value
     if(endPag == 0xFF) endPag = clearFrame.pages - 1;
@@ -203,6 +203,7 @@ void Label::fill(char data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, 
     cursor.page = beginPag;
     for(int i = beginCol; i < clearFrame.columns; i++) {
         cursor.column = i;
+
         driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
     }
     // clear intermediate line(s)
@@ -215,7 +216,7 @@ void Label::fill(char data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, 
     }
     // clear (part of) the last line
     cursor.page = endPag;
-    for(int i = 0; i <= endCol; i++) {
+    for(unsigned int i = 0; i <= endCol; i++) {
         cursor.column = i;
         driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
     }

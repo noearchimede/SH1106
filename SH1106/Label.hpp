@@ -108,14 +108,14 @@ public:
                  The function will write as many character as possible given the
                  space available from current cursor position.
     */
-    bool write(char text[]);
+    bool print(char text[]);
     //! Prints a char array of given lenght on the screen.
     /*! @see write(char text[])
         @param text A char array containing the text to print. NULL characters
                     ('\0') will be ignored.
         @param length Lengt of the text array.
     */
-    bool write(char text[], uint16_t length);
+    bool print(char text[], uint16_t length);
 
     //! Clear the label
     /*! The cursor will be moved to (0,0)
@@ -218,7 +218,7 @@ private:
     // Margin on each side of the label in pixels
     static constexpr unsigned int margin = 1;
 
-    
+
 
     // ### FUNCTIONS ### //
 
