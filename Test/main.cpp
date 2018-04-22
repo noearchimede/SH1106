@@ -11,13 +11,16 @@ void setup() {
     oled.init();
 
     Label screen(oled, 128, 8, 0,0);
-    Label label(oled, 100, 3, 20, 2);
+    Label label(oled, 122, 6, 3, 1);
 
-    //screen.fill(0xEF);
+    screen.fill(0xFF);
+    screen.fill(0x7F, 0, 0, 0xff, 0);
+    screen.fill(0xFE, 0, 7, 0xff, 7);
 
-    //label.clear();
-    char s[5] =  {'H', 'e', 'l', 'l', 'o'};
-    label.print(s, 5);
+
+
+    label.clear();
+    label.print("Ahi quanto a dir qual'era e` cosa dura esta selva servaggia e aspra e forte che nel pensier rinova la paura");
 
 
 /**/

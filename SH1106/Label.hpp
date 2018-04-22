@@ -198,7 +198,7 @@ public:
                 some bytes were printed.
 
     */
-    bool writeArray(uint8_t column, uint8_t page, uint8_t data[], uint8_t length);
+    bool writeArray(uint8_t data[], uint8_t length);
 
 
 
@@ -245,7 +245,7 @@ private:
     // Thus this function should not be called if the character or character
     // sequence is a tab, newline or carriage return. Neither should it be
     // called for spaces, but if it were it would return a fixed width space.
-    PageFont::Char getPrintableChar(bool& bothUsed, char char1, char char2 = '\0');
+    const uint8_t* getPrintableChar(bool& bothUsed, char char1, char char2 = '\0');
 
 
     // Get the width in pixels of a word with charCount characters.
@@ -255,8 +255,6 @@ private:
     // considered.
     uint16_t getWordWidth(char word[], uint16_t firstIndex, uint16_t stopIndex);
 
-    // Get the width of any printable ASCII character (including space)
-    uint8_t getAsciiCharWidth(char character);
 
     // Write a given number of printable characters. The string must not contain
     // newlines, tabs or carriage returns and should not contain spaces
@@ -265,7 +263,7 @@ private:
     bool writeWord(char word[], uint16_t firstIndex, uint16_t stopIndex);
 
     // Write a character
-    bool writeChar(PageFont::Char c);
+    bool writeChar(const uint8_t *);
 
     // ### VARIABLES ###
 

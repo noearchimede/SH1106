@@ -26,10 +26,10 @@ void Label::clear() {
 
 
 
-bool Label::print(const char text[]) {
+bool Label::print(char text[]) {
     uint16_t i = 0;
-    while(text[i++] != '\0');
-    
+    if(!text[0]) return true;
+    while(text[++i]);
     return print(text, i);
 }
 
@@ -40,7 +40,7 @@ bool Label::print(char text[], uint16_t length) {
 
     uint16_t wordStartIndex = 0;
     bool charsToPrint = false;
-
+    
     uint16_t i = 0;
     while(i < length) {
         bool escapeSequence;
@@ -57,6 +57,9 @@ bool Label::print(char text[], uint16_t length) {
             // Perform required action on cursor
             switch(move) {
                 case MoveType::space:
+                // avoid spaces at the beginning of a line. This restriction
+                // doesn't apply to the `space()` function.`
+                if(cursor.column != 0)
                 if(!space()) return false;
                 break;
                 case MoveType::tab:
@@ -88,12 +91,11 @@ bool Label::print(char text[], uint16_t length) {
     // Print last word
     if(charsToPrint) {
         charsToPrint = false;
-        if(!writeWord(text, wordStartIndex, i)) return false;
+        if(!writeWord(text, wordStartIndex, i))  return false;
     }
 
     return true;
 }
-
 
 
 
@@ -124,6 +126,7 @@ bool Label::tab(uint8_t anchor) {
 
     // Clear the space jumped by the tab
     bool inFrame = frame.isInFrame(cursor.column + tab);
+
     if(inFrame) fill(0x00, cursor.column, cursor.page, (cursor.column + tab), cursor.page);
     else fill(0x00, cursor.column, cursor.page, 0xFF, cursor.page);
 
@@ -138,7 +141,11 @@ bool Label::tab(uint8_t anchor) {
 
 
 bool Label::newline() {
-    cursor.page++;
+    // Since there isn't much space
+    if(cursor.column != 0) {
+        cursor.page++;
+        cursor.column = 0;
+    }
     if(frame.isInFrame(cursor.column, cursor.page)) return true;
     return false;
 }
@@ -148,7 +155,7 @@ bool Label::newline() {
 
 bool Label::carriageReturnClear() {
     fill(0x0,0,cursor.page,0xFF,cursor.page);
-    // `fill` moves the cursor to the `begin` position.
+    // here `fill` moves the cursor to the `begin` position.
 
     return true; //always
 }
@@ -157,9 +164,18 @@ bool Label::carriageReturnClear() {
 
 
 bool Label::space() {
-    if(frame.isInFrame(cursor.column + getAsciiCharWidth(' ')))
-    writeChar(font.getAscii(' '));
+    // Calculate the width of the space
+    // If possible use the width of the ascii space character
+    uint8_t width;
+    font.readCharLenght(font.getAscii(' '), width);
+    uint8_t availableSpace = frame.columns - cursor.column;
 
+    if(width > availableSpace) width = availableSpace;
+    for(uint8_t i = 0; i < width; i++) {
+        driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), 0x00);
+    }
+
+    cursor.move(width);
     return true; //always
 }
 
@@ -199,26 +215,39 @@ void Label::fill(char data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, 
         if(endCol < beginCol) return;
     }
 
-    // clear (part of) the first line
-    cursor.page = beginPag;
-    for(int i = beginCol; i < clearFrame.columns; i++) {
-        cursor.column = i;
-
-        driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
-    }
-    // clear intermediate line(s)
-    for(int k = beginPag + 1; k < endPag; k++) {
-        cursor.page = k;
-        for(int i = 0; i < clearFrame.columns; i++) {
+    // If the region to fill is on a single page
+    if(beginPag == endPag) {
+        cursor.page = beginPag;
+        for(int i = beginCol; i <= endCol; i++) {
             cursor.column = i;
+
             driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
         }
     }
-    // clear (part of) the last line
-    cursor.page = endPag;
-    for(unsigned int i = 0; i <= endCol; i++) {
-        cursor.column = i;
-        driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
+
+    // if multiple pages are to be filled
+    else {
+        // clear (part of) the first line
+        cursor.page = beginPag;
+        for(int i = beginCol; i < clearFrame.columns; i++) {
+            cursor.column = i;
+
+            driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
+        }
+        // clear intermediate line(s)
+        for(int k = beginPag + 1; k < endPag; k++) {
+            cursor.page = k;
+            for(int i = 0; i < clearFrame.columns; i++) {
+                cursor.column = i;
+                driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
+            }
+        }
+        // clear (part of) the last line
+        cursor.page = endPag;
+        for(unsigned int i = 0; i <= endCol; i++) {
+            cursor.column = i;
+            driver.writeData(clearFrame.absolutePage(cursor.page), clearFrame.absoluteColumn(cursor.column), data);
+        }
     }
 
     cursor.page = beginPag;
@@ -228,7 +257,7 @@ void Label::fill(char data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, 
 
 
 
-bool Label::writeArray(uint8_t column, uint8_t page, uint8_t data [], uint8_t length) {
+bool Label::writeArray(uint8_t data [], uint8_t length) {
 
     // cut the array, if needed, to fit in current page
     bool cut = false;
@@ -237,7 +266,7 @@ bool Label::writeArray(uint8_t column, uint8_t page, uint8_t data [], uint8_t le
         cut = true;
     }
 
-    driver.writeData(frame.absolutePage(column), frame.absoluteColumn(page), data, length);
+    driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), data, length);
 
     cursor.move(length);
 
@@ -253,11 +282,11 @@ bool Label::writeArray(uint8_t column, uint8_t page, uint8_t data [], uint8_t le
 
 
 
-PageFont::Char Label::getPrintableChar(bool& bothUsed, char char1, char char2) {
+const uint8_t* Label::getPrintableChar(bool& bothUsed, char char1, char char2) {
 
 
     // Default return values, will be changed according to the situation.
-    PageFont::Char c = font.getUnknown();
+    const uint8_t* c = font.getUnknown();
     bothUsed = true;
 
 
@@ -285,7 +314,7 @@ PageFont::Char Label::getPrintableChar(bool& bothUsed, char char1, char char2) {
     else if(char1 == '^'    && char2 == '-') c = font.getArrow(7); // ^-
 
     // Digits at exponent position
-    else if(char1 == '^' && ('0' <= char2 && char2 >= '9')) c = font.getExpDigit(char2 - '0');
+    else if(char1 == '^' && ('0' <= char2 && char2 <= '9')) c = font.getExpDigit(char2 - '0');
 
     // Special characters
     // degree symbol
@@ -354,25 +383,20 @@ uint16_t Label::getWordWidth(char word[], uint16_t firstIndex, uint16_t stopInde
     uint16_t i = firstIndex;
     while(i < stopIndex) {
         // get the character that should be printed
-        PageFont::Char c;
+        const uint8_t* c;
         bool escapeSequence;
         c = getPrintableChar(escapeSequence, word[i], (i < stopIndex ? word[i+1] : '\0'));
         // get its width
-        width += c.length;
+        uint8_t length;
+        font.readCharLenght(c, length);
+        width += length;
+        // Add the one byte space between letters
+        width += 1;
         // Increase `i` by one or two if two characters were joined together
         if(escapeSequence) i++;
         i++;
     }
     return width;
-}
-
-
-
-
-uint8_t Label::getAsciiCharWidth(char character) {
-    PageFont::Char c;
-    c = font.getAscii(character);
-    return c.length;
 }
 
 
@@ -385,13 +409,15 @@ bool Label::writeWord(char word[], uint16_t firstIndex, uint16_t stopIndex) {
 
     // get word width
     const uint16_t width = getWordWidth(word, firstIndex, stopIndex);
+
     // check whether it is possible to print it and move the cursor if needed
     if(!cursor.prepare(width)) return false;
+
 
     uint16_t i = firstIndex;
     while(i < stopIndex) {
         // Get the printable character
-        PageFont::Char c;
+        const uint8_t* c;
         bool escapeSequence;
         c = getPrintableChar(escapeSequence, word[i], (i < stopIndex ? word[i+1] : '\0'));
 
@@ -407,20 +433,21 @@ bool Label::writeWord(char word[], uint16_t firstIndex, uint16_t stopIndex) {
 
 
 
-bool Label::writeChar(PageFont::Char c) {
+bool Label::writeChar(const uint8_t * c) {
 
-    // This check shouldn't normally be necessary because other functions
-    // should call `cursor.prepare() before calling this function, but it could
-    // yield a positiver result (resulting in this function returning false) in
-    // some special cases, for example if a word is wider than a line of the
-    // label.
-    if(!frame.isInFrame(cursor.column, cursor.page)) return false;
+    // Get character
+    uint8_t length;
+    uint8_t data[font.maxWidth];
+    font.readCharArray(c, length, data);
+
+    if(!cursor.prepare(length)) return false;
 
     // Print character
-    driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), c.data, c.length);
-    if(!cursor.move(c.length)) return false;
+    driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), data, length);
+
+    if(!cursor.move(length)) return false;
     // Print one pixel space
-    driver.writeData(cursor.page, cursor.column, 0x0);
+    driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), 0x0);
     if(!cursor.move(1)) return false;
 
     return true;
@@ -493,8 +520,8 @@ bool Label::Cursor::prepare(uint8_t textWidth) {
     // there isn't, try to move to next line but before doing it check if the
     // word would fit in an empty line.
     if(textWidth > frame.columns) {
-        // the word is too long and needs to be wrapped at least once.
-        // It's characters will be written until reacing the end of the label.
+        // the word is too long to be written on a single page, but there are
+        // enough pages to write it. Don't move to next line.
         return true;
     }
     if(page + 1 < frame.pages) {
