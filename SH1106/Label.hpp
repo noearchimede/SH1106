@@ -117,6 +117,10 @@ public:
     */
     bool print(char text[], uint16_t length);
 
+
+    bool printJustified(char text[]);
+    bool printJustified(char text[], uint16_t length);
+
     //! Clear the label
     /*! The cursor will be moved to (0,0)
     */
@@ -219,7 +223,6 @@ private:
     static constexpr unsigned int margin = 1;
 
 
-
     // ### FUNCTIONS ### //
 
     // This enum is used as return type of the `getMoveChar()` function
@@ -264,6 +267,8 @@ private:
 
     // Write a character
     bool writeChar(const uint8_t *);
+
+
 
     // ### VARIABLES ###
 

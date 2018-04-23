@@ -35,12 +35,11 @@ bool Label::print(char text[]) {
 
 
 
-
 bool Label::print(char text[], uint16_t length) {
 
     uint16_t wordStartIndex = 0;
     bool charsToPrint = false;
-    
+
     uint16_t i = 0;
     while(i < length) {
         bool escapeSequence;
@@ -96,6 +95,7 @@ bool Label::print(char text[], uint16_t length) {
 
     return true;
 }
+
 
 
 
@@ -164,13 +164,12 @@ bool Label::carriageReturnClear() {
 
 
 bool Label::space() {
-    // Calculate the width of the space
-    // If possible use the width of the ascii space character
+    // Calculate the width of the space, if possible use the default one
     uint8_t width;
     font.readCharLenght(font.getAscii(' '), width);
     uint8_t availableSpace = frame.columns - cursor.column;
-
     if(width > availableSpace) width = availableSpace;
+
     for(uint8_t i = 0; i < width; i++) {
         driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), 0x00);
     }

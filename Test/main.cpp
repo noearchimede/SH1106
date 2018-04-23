@@ -12,15 +12,18 @@ void setup() {
 
     Label screen(oled, 128, 8, 0,0);
     Label label(oled, 122, 6, 3, 1);
-
+/*
     screen.fill(0xFF);
     screen.fill(0x7F, 0, 0, 0xff, 0);
     screen.fill(0xFE, 0, 7, 0xff, 7);
+*/
 
 
+    screen.clear();
+    screen.print("Ahi quanto a dir qual'era e`\n");
+    screen.print("Ahi quanto a dir qual'era e` cosa dura esta selva selvaggia e aspra e forte che nel pensier rinnova la paura");
 
-    label.clear();
-    label.print("Ahi quanto a dir qual'era e` cosa dura esta selva servaggia e aspra e forte che nel pensier rinova la paura");
+
 
 
 /**/
