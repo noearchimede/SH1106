@@ -20,7 +20,7 @@ void setup() {
 
 
     screen.clear();
-    screen.print(PSTR("Hello, wordl!\nzero\t0\none\t1\ntwo\t2\ntree\t3"));
+    screen.print(PSTR("Hello, wordl!nzerot0nonet1ntwot2ntreet3"));
 
 
 }

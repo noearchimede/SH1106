@@ -120,9 +120,6 @@ public:
     bool print(char text[], uint16_t length);
 
 
-    bool printJustified(char text[]);
-    bool printJustified(char text[], uint16_t length);
-
     //! Clear the label
     /*! The cursor will be moved to (0,0)
     */
