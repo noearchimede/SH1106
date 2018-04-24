@@ -6,8 +6,10 @@
 
 SH1106_driver::SH1106_driver(uint8_t pages, uint8_t width, uint8_t horizontalOffset) :
 interface(0x78, true, 100000),
+// 132 and 8 are the RAM limits
 screenWidth((width < 132) ? width : 132),
 screenPages((pages < 8) ? pages : 8),
+
 screenOffset(horizontalOffset)
 {
 }
@@ -40,6 +42,8 @@ bool SH1106_driver::init()
 }
 
 
+
+
 void SH1106_driver::writeData(uint8_t page, uint8_t column, uint8_t data[], uint8_t length) {
     // check input
     if(page >= screenPages || column >= screenWidth) return;
@@ -70,6 +74,16 @@ void SH1106_driver::writeData(uint8_t page, uint8_t column, uint8_t data) {
 bool SH1106_driver::checkConnection() {
     return interface.checkConnection();
 }
+
+
+void SH1106_driver::turnOn() {
+    displayEnable(true);
+}
+
+void SH1106_driver::turnOff() {
+    displayEnable(false);
+}
+
 
 
 // ########################### SH1106 COMMANDS #################################

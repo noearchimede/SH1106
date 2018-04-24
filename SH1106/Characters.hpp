@@ -1,7 +1,10 @@
 /*! @file This file contains the graphical definition of the most importand ASCII Characters. */
 
+#ifndef Characters_hpp
+#define Characters_hpp
+
 #include <inttypes.h>
-#include <avr/pgmspace.h> // for PROGMEM
+
 
 //! Definition of a set of characters designed to fit an 8-bit page
 struct PageFont {
@@ -42,3 +45,5 @@ struct PageFont {
     const uint8_t * getSpecialChar(SpecialChar name);
 
 };
+
+#endif

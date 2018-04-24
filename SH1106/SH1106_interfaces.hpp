@@ -28,9 +28,10 @@ interface yet, the user will need to write a class derived from this one.
 #ifndef SH1106_interfaces_h
 #define SH1106_interfaces_h
 
-
 #include <inttypes.h>
 #include "Arduino.h"
+
+
 
 class SH1106_interface {
 
@@ -141,7 +142,6 @@ private:
     void controlByte(bool last, bool command);
 
 };
-
 
 
 #endif

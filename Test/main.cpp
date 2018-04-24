@@ -20,13 +20,9 @@ void setup() {
 
 
     screen.clear();
-    screen.print("Ahi quanto a dir qual'era e`\n");
-    screen.print("Ahi quanto a dir qual'era e` cosa dura esta selva selvaggia e aspra e forte che nel pensier rinnova la paura");
+    screen.print(PSTR("Hello, wordl!\nzero\t0\none\t1\ntwo\t2\ntree\t3"));
 
 
-
-
-/**/
 }
 void loop() {
 

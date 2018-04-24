@@ -1,4 +1,4 @@
-/*! @file Header of the SH1106 class
+/*! @file Header of the Label class
 */
 
 #ifndef Label_hpp
@@ -7,6 +7,8 @@
 #include <inttypes.h>
 #include "SH1106_driver.hpp"
 #include "characters.hpp"
+
+
 
 /*!
 The Label class allows to write any ASCII character plus some other symbols in
@@ -92,28 +94,28 @@ public:
 
     //! Prints a NULL-TERMINATED string literal or char array on the screen
     /*! The text is encoded in ASCII but can contain a number of special
-        sequences, listed in the class description. It will be print starting
-        from the current cursor position and will be cut at the end of the
-        label. Words (sequences of characters beetween two spaces) will not be
-        split between two lines, if there isn't enough space for a word on the
-        current line the cursor will automatically move to the next one, but
-        spacing will not be influenced by the amount of free space at the end
-        of the line.
+    sequences, listed in the class description. It will be print starting
+    from the current cursor position and will be cut at the end of the
+    label. Words (sequences of characters beetween two spaces) will not be
+    split between two lines, if there isn't enough space for a word on the
+    current line the cursor will automatically move to the next one, but
+    spacing will not be influenced by the amount of free space at the end
+    of the line.
 
-        @warning The char array must end with a '\0' (NULL) character.
-                 '\0' is automatically appended to string literals.
+    @warning The char array must end with a '\0' (NULL) character.
+    '\0' is automatically appended to string literals.
 
-        @param text  The char array containting the text to print
-        @return `false` if there wasn't space enough to print all the text.
-                 The function will write as many character as possible given the
-                 space available from current cursor position.
+    @param text  The char array containting the text to print
+    @return `false` if there wasn't space enough to print all the text.
+    The function will write as many character as possible given the
+    space available from current cursor position.
     */
     bool print(char text[]);
     //! Prints a char array of given lenght on the screen.
     /*! @see write(char text[])
-        @param text A char array containing the text to print. NULL characters
-                    ('\0') will be ignored.
-        @param length Lengt of the text array.
+    @param text A char array containing the text to print. NULL characters
+    ('\0') will be ignored.
+    @param length Lengt of the text array.
     */
     bool print(char text[], uint16_t length);
 
@@ -129,18 +131,18 @@ public:
 
     //! Write a tab
     /*! By default there is an anchor every 25 pixels. Those anchors are used
-        when there is no paramenter or the 'anchor' parameter is 0.
-        It is also possible to set a custom anchor defined as a distance from
-        the left (i.e. 60 will make the cursor jump to column 60). If the
-        cursor is at a column at the right side of the anchor only a space will
-        be drawn.
+    when there is no paramenter or the 'anchor' parameter is 0.
+    It is also possible to set a custom anchor defined as a distance from
+    the left (i.e. 60 will make the cursor jump to column 60). If the
+    cursor is at a column at the right side of the anchor only a space will
+    be drawn.
 
-        This function actually writes some empty bytes, i.e. it will overwrite
-        any underlying pixel.
+    This function actually writes some empty bytes, i.e. it will overwrite
+    any underlying pixel.
 
-        @return `false`if a custom-defined anchor could not be respoected
-                (because it was out of frame or the cursor was already on its
-                right side) or the tab went out of the frame.
+    @return `false`if a custom-defined anchor could not be respoected
+    (because it was out of frame or the cursor was already on its
+    right side) or the tab went out of the frame.
     */
     bool tab(uint8_t anchor = 0);
 
@@ -156,50 +158,50 @@ public:
 
     //! Write a space
     /*! The space will overwrite any previouvsly written characters, but it
-        will be cut if it is at end of a line.
+    will be cut if it is at end of a line.
 
-        @return This function will always return true.
+    @return This function will always return true.
     */
     bool space();
 
 
     //! Move the cursor to a given location
     /*! If the given position is out of the label the cursor will not be moved
-        and this function will return false.
+    and this function will return false.
     */
     bool moveCursor(uint8_t column, uint8_t page);
 
     //! Write a single byte on a given part of the label
     /*! The cursor will be moved to the "begin" location.
-        The "begin" and "end" points are given in the form (beginX, beginY, endX, endY).
-        `data` is a byte that will be repeatedly printed.
-        If the end position is seto to 0xff it will be changed to the end of the
-        label.
+    The "begin" and "end" points are given in the form (beginX, beginY, endX, endY).
+    `data` is a byte that will be repeatedly printed.
+    If the end position is seto to 0xff it will be changed to the end of the
+    label.
 
-        If called with the default arguments this function clears the entire
-        label (i.e. writes 0s on it).
+    If called with the default arguments this function clears the entire
+    label (i.e. writes 0s on it).
 
-        After execution the cursor is moved to the `begin` position.
+    After execution the cursor is moved to the `begin` position.
     */
-    void fill(char data = 0x00, uint8_t beginCol = 0, uint8_t beginPag = 0, uint8_t endCol = 0xFF, uint8_t endPag = 0xFF);
+    void fill(uint8_t data = 0x00, uint8_t beginCol = 0, uint8_t beginPag = 0, uint8_t endCol = 0xFF, uint8_t endPag = 0xFF);
 
 
     //! Draw a number of consecutive bytes on a page as if it were a character
     /*! Draw any number of bytes on a single page. If the array is wider than
-        the remaining space on the current page only a part of it will be
-        printed, i.e. the printing of an array will not continue on the next
-        page as it would in the case of a string.
-        The printing will begin at current cursor positio and the cursor will
-        be moved to the end of the string.
+    the remaining space on the current page only a part of it will be
+    printed, i.e. the printing of an array will not continue on the next
+    page as it would in the case of a string.
+    The printing will begin at current cursor positio and the cursor will
+    be moved to the end of the string.
 
-        @param page     Frame page on wich data will be displayed
-        @param column   Frame column of the first data byte
-        @param data     Array of bytes to be displayed
-        @param length   Length of the `data` array
+    @param page     Frame page on wich data will be displayed
+    @param column   Frame column of the first data byte
+    @param data     Array of bytes to be displayed
+    @param length   Length of the `data` array
 
-        @return This function will only return `true` if the array has been
-                _entirely_ print. This means that it could return `false` while
-                some bytes were printed.
+    @return This function will only return `true` if the array has been
+    _entirely_ print. This means that it could return `false` while
+    some bytes were printed.
 
     */
     bool writeArray(uint8_t data[], uint8_t length);
@@ -322,6 +324,5 @@ private:
     Cursor cursor;
 
 };
-
 
 #endif

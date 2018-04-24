@@ -3,8 +3,6 @@
 #include "Label.hpp"
 
 
-
-
 Label::Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage)
 :
 // Make the frame two bytes less wide to allow a one-pixel margin on each side
@@ -95,7 +93,6 @@ bool Label::print(char text[], uint16_t length) {
 
     return true;
 }
-
 
 
 
@@ -197,7 +194,7 @@ bool Label::moveCursor(uint8_t column, uint8_t page) {
 
 
 
-void Label::fill(char data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, uint8_t endPag) {
+void Label::fill(uint8_t data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, uint8_t endPag) {
 
     // correct the indexing error created by the margin (see e.g. the
     // constructor to undestand the "problem")

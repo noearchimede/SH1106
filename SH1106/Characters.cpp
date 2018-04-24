@@ -2,6 +2,7 @@
 description of all characters. */
 
 #include "Characters.hpp"
+#include <avr/pgmspace.h> // for PROGMEM
 
 
 static const PROGMEM uint8_t space [4] = { 3 , 0x00, 0x00, 0x00};

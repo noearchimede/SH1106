@@ -10,8 +10,8 @@
 
 /*! @brief SH1106 OLED controller communication management
 
-    This class gives easy access to all SH1106 basic commands and provides an
-    initialization and a write functions.
+This class gives easy access to all SH1106 basic commands and provides an
+initialization and a write functions.
 */
 class SH1106_driver {
 
@@ -21,14 +21,14 @@ public:
 
     //! Constructor
     /*! @param i2c          An object of the i2c class derived from SH1106_interface which
-                            will be used to communicate with the SH1106 chip
-        @param width        Width of the OLED screen (may be smaller than the 132
-                            bytes RAM of the SH1106)
-        @param pages        Number of pages shown on screen. A page is 8 lines.
-                            The RAM has 8 pages.
-        @param horizontalOffset RAM address of the first column. It may be not 0
-                            when the screen is less wide than the RAM (e.g. is
-                            sometimes 2 for 128 pixel screens).
+    will be used to communicate with the SH1106 chip
+    @param width        Width of the OLED screen (may be smaller than the 132
+    bytes RAM of the SH1106)
+    @param pages        Number of pages shown on screen. A page is 8 lines.
+    The RAM has 8 pages.
+    @param horizontalOffset RAM address of the first column. It may be not 0
+    when the screen is less wide than the RAM (e.g. is
+    sometimes 2 for 128 pixel screens).
 
     */
     SH1106_driver(uint8_t pages = 8, uint8_t width = 132, uint8_t horizontalOffset = 0);
@@ -43,25 +43,24 @@ public:
     */
     bool init();
 
-
     //! Write an array of bytes on the display
     /*!
-        @param page     page on wich the array will be written
-        @param column   column on wich the first by will be written, then the
-                        column address will be incremented until (column+lenght)
-                        is reached
-        @param data     array of bytes to be written
-        @param length   length of the data array
+    @param page     page on wich the array will be written
+    @param column   column on wich the first by will be written, then the
+    column address will be incremented until (column+lenght)
+    is reached
+    @param data     array of bytes to be written
+    @param length   length of the data array
     */
     void writeData(uint8_t page, uint8_t column, uint8_t data[], uint8_t lenght);
 
     //! Write a single byte on the display
     /*!
-        @param page     page on wich the array will be written
-        @param column   column on wich the first by will be written, then the
-                        column address will be incremented until (column+lenght)
-                        is reached
-        @param data     bytes to be written
+    @param page     page on wich the array will be written
+    @param column   column on wich the first by will be written, then the
+    column address will be incremented until (column+lenght)
+    is reached
+    @param data     bytes to be written
     */
     void writeData(uint8_t page, uint8_t column, uint8_t data);
 
@@ -69,12 +68,19 @@ public:
     //! Chack whether an SH1106 is connected to the microcontroller
     bool checkConnection();
 
+    //! Turn on the display
+    void turnOn();
+
+    //! Turn off the display
+    void turnOff();
+    
+protected:
 
     //! @name SH1106 basic commands
     /*! The following functions give access to all SH1106 parameters. For detailed
-        information about each setting refer to the datasheet (available e.g.
-        here: http://www.allshore.com/pdf/SH1106.pdf).
-        The numbres in comment refer to the command number in the datasheet
+    information about each setting refer to the datasheet (available e.g.
+    here: http://www.allshore.com/pdf/SH1106.pdf).
+    The numbres in comment refer to the command number in the datasheet
     */
     //!@{
     void   columnAddr         (uint8_t col);                          //!< 1, 2
@@ -100,6 +106,7 @@ public:
     void   rmwEnd             (void);                                 //!< 20
     void   nop                (void);                                 //!< 21
     //!@}
+
 
 
 private:
