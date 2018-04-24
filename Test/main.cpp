@@ -20,7 +20,7 @@ void setup() {
 
 
     label.clear();
-    label.print("Ahi quanto a dir qual'era e` cosa dura esta selva servaggia e aspra e forte che nel pensier rinova la paura");
+    label.print(PSTR("Hello, wordl!\nzero\t0\none\t1\ntwo\t2\ntree\t3"));
 
 
 /**/
