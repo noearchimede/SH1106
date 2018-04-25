@@ -1,7 +1,7 @@
 /*! @file Header of the Image class
 */
 
-#if 0//ndef Image_hpp
+#ifndef Image_hpp
 #define Image_hpp
 
 #include <inttypes.h>
@@ -13,11 +13,14 @@ Tha Image class allows to write a bitmap image on a given area of the screen.
 The frame can have any size in width, but it's height must be a multiple of 8
 as well as its y position because it needs to fit an integer number of pages.
 
-The image must be represented as an unidimensional array whose each n elements
-represent a descending vertical line. The most significant bit of the first byte
-represents the pixel on the top left corner of the image, the lsb of the nth
-byte is the pixel on the bottom left corner, and the lsb of the last byte is
-the pixel on bottom right.
+The image must be represented as an unidimensional array of bytes. One byte
+represents a vertical 8-pixel line whose top pixel is the most significant bit
+of the pixel. The byte sequence procedes from left to right and then from top to
+bottom.
+
+@warning The image array must have enough bytes to fill the entire frame, i.e.
+         to a 20 columns x 24 rows (i.e. 3 pages) an array of (at least) 60
+         bytes must be passed.
 
 */
 class Image {
@@ -28,11 +31,10 @@ public:
     Image(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage);
 
     //! Draw an image in the label
-    /*! The size of the image must match the frame size. If it doesn't result
-        is not defined.
-
+    /*! The size of the image must match the frame size. If it doesn't the
+        behaviour is not defined.
     */
-    void draw(uint8_t image[]);
+    void draw(const uint8_t image[]);
 
     //! Clear the frame
     /*! The cursor will be moved to (0,0)
@@ -50,7 +52,7 @@ public:
         @param pattern this array will be repeatedly print to fill the frame
         @param length length of the pattern array
     */
-    void fill(uint8_t * pattern, uint8_t length)
+    void fill(uint8_t * pattern, uint8_t length);
 
 
 private:

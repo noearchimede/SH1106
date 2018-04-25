@@ -138,11 +138,8 @@ bool Label::tab(uint8_t anchor) {
 
 
 bool Label::newline() {
-    // Since there isn't much space
-    if(cursor.column != 0) {
-        cursor.page++;
-        cursor.column = 0;
-    }
+    cursor.page++;
+    cursor.column = 0;
     if(frame.isInFrame(cursor.column, cursor.page)) return true;
     return false;
 }
