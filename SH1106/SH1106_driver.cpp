@@ -44,7 +44,7 @@ bool SH1106_driver::init()
 
 
 
-void SH1106_driver::writeData(uint8_t page, uint8_t column, uint8_t data[], uint8_t length) {
+void SH1106_driver::writeData(uint8_t page, uint8_t column, const uint8_t data[], uint8_t length) {
     // check input
     if(page >= screenPages || column >= screenWidth) return;
     // subtract horizontal offset
@@ -58,7 +58,7 @@ void SH1106_driver::writeData(uint8_t page, uint8_t column, uint8_t data[], uint
 }
 
 
-void SH1106_driver::writeData(uint8_t page, uint8_t column, uint8_t data) {
+void SH1106_driver::writeData(uint8_t page, uint8_t column, const uint8_t data) {
     // check input
     if(page >= screenPages || column >= screenWidth) return;
     // subtract horizontal offset

@@ -111,13 +111,17 @@ public:
     space available from current cursor position.
     */
     bool print(char text[]);
+
+    //! Like `print(char)` but works for strings stored in PROGMEM
+
     //! Prints a char array of given lenght on the screen.
     /*! @see write(char text[])
     @param text A char array containing the text to print. NULL characters
     ('\0') will be ignored.
     @param length Lengt of the text array.
+    @param progmem Set to true if the `text` is stored in Flash memory (not RAM)
     */
-    bool print(char text[], uint16_t length);
+    bool print(const char text[], uint16_t length, bool progmem);
 
 
     //! Clear the label
@@ -201,7 +205,7 @@ public:
     some bytes were printed.
 
     */
-    bool writeArray(uint8_t data[], uint8_t length);
+    bool writeArray(const uint8_t data[], uint8_t length);
 
 
 
@@ -234,7 +238,7 @@ private:
     // parameter will be `true`
     // The second character may be NULL while the first one should be a
     // printable character or one of '\n', '\t' and '\r'
-    MoveType getMoveChar(bool& bothUsed, char char1, char char2 = '\0');
+    MoveType getMoveChar(bool& bothUsed, const char char1, const char char2 = '\0');
 
     // Function used to read a characher array wich may contain escaped
     // characters. If the parameter `bothUsed` is true the two characters were
@@ -247,7 +251,7 @@ private:
     // Thus this function should not be called if the character or character
     // sequence is a tab, newline or carriage return. Neither should it be
     // called for spaces, but if it were it would return a fixed width space.
-    const uint8_t* getPrintableChar(bool& bothUsed, char char1, char char2 = '\0');
+    const uint8_t* getPrintableChar(bool& bothUsed, const char char1, const char char2 = '\0');
 
 
     // Get the width in pixels of a word with charCount characters.
@@ -255,14 +259,18 @@ private:
     // should not contain spaces.
     // Only lements [firstIndex] to [stopIndex - 1] of the array will be
     // considered.
-    uint16_t getWordWidth(char word[], uint16_t firstIndex, uint16_t stopIndex);
+    // The progmem parameter must be true if the data array is stored in Flash
+    // memory and false if it is in RAM
+    uint16_t getWordWidth(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem);
 
 
     // Write a given number of printable characters. The string must not contain
     // newlines, tabs or carriage returns and should not contain spaces
     // Only lements [firstIndex] to [stopIndex - 1] of the array will be
     // considered.
-    bool writeWord(char word[], uint16_t firstIndex, uint16_t stopIndex);
+    // The progmem parameter must be true if the data array is stored in Flash
+    // memory and false if it is in RAM
+    bool writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem);
 
     // Write a character
     bool writeChar(const uint8_t *);

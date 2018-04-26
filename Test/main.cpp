@@ -4,12 +4,7 @@
 #include "Label.hpp"
 #include "Image.hpp"
 
-
-const uint8_t qdr [] = {
-	// size is 10 x 15
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF3, 0x7F, 0xF8, 0x07, 0xFC, 0x00, 0x1E, 0x10, 0x01,
-	0x00, 0x00, 0x00
-};
+const char s [] = "Hello, world!\0";
 
 void setup() {
  Serial.begin(9600);
@@ -25,15 +20,8 @@ void setup() {
     screen.fill(0xFE, 0, 7, 0xff, 7);
 */
 
-    Image image (oled, 10, 2, 70, 5);
-
-    image.fill(0x00);
-
-
-    image.draw(qdr);
-
-    //screen.clear();
-    //screen.print("Hello, wordl!\n\nzero\t0\none\t1\ntwo\t2\ntree\t3");
+    screen.clear();
+    screen.print(s, 13, false);
 
 
 }

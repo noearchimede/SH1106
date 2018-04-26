@@ -57,7 +57,7 @@ void SH1106_I2C::sendCommand(uint8_t command) {
 }
 
 
-void SH1106_I2C::writeRAM(uint8_t data[], uint8_t length) {
+void SH1106_I2C::writeRAM(const uint8_t data[], uint8_t length) {
     start();
     addrWrite();
     controlByte(true, false);
@@ -67,7 +67,7 @@ void SH1106_I2C::writeRAM(uint8_t data[], uint8_t length) {
     stop();
 }
 
-void SH1106_I2C::writeRAM(uint8_t data) {
+void SH1106_I2C::writeRAM(const uint8_t data) {
     start();
     addrWrite();
     controlByte(true, false);

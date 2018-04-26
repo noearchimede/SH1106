@@ -28,12 +28,12 @@ bool Label::print(char text[]) {
     uint16_t i = 0;
     if(!text[0]) return true;
     while(text[++i]);
-    return print(text, i);
+    return print(text, i, true);
 }
 
 
 
-bool Label::print(char text[], uint16_t length) {
+bool Label::print(const char text[], uint16_t length, bool progmem) {
 
     uint16_t wordStartIndex = 0;
     bool charsToPrint = false;
@@ -42,13 +42,18 @@ bool Label::print(char text[], uint16_t length) {
     while(i < length) {
         bool escapeSequence;
         MoveType move;
-        move = getMoveChar(escapeSequence, text[i], (i+1 < length? text[i+1] : '\0'));
+        if(progmem) {
+            move = getMoveChar(escapeSequence, pgm_read_byte(&(text[i])), (i+1 < length? pgm_read_byte(&(text[i+1])) : '\0'));
+        }
+        else {
+            move = getMoveChar(escapeSequence, text[i], (i+1 < length? text[i+1] : '\0'));
+        }
 
         if(move != MoveType::none) {
             // Print last word
             if(charsToPrint) {
                 charsToPrint = false;
-                if(!writeWord(text, wordStartIndex, i)) return false;
+                if(!writeWord(text, wordStartIndex, i, progmem)) return false;
             }
 
             // Perform required action on cursor
@@ -88,7 +93,7 @@ bool Label::print(char text[], uint16_t length) {
     // Print last word
     if(charsToPrint) {
         charsToPrint = false;
-        if(!writeWord(text, wordStartIndex, i))  return false;
+        if(!writeWord(text, wordStartIndex, i, progmem))  return false;
     }
 
     return true;
@@ -250,7 +255,7 @@ void Label::fill(uint8_t data, uint8_t beginCol, uint8_t beginPag, uint8_t endCo
 
 
 
-bool Label::writeArray(uint8_t data [], uint8_t length) {
+bool Label::writeArray(const uint8_t data [], uint8_t length) {
 
     // cut the array, if needed, to fit in current page
     bool cut = false;
@@ -275,7 +280,7 @@ bool Label::writeArray(uint8_t data [], uint8_t length) {
 
 
 
-const uint8_t* Label::getPrintableChar(bool& bothUsed, char char1, char char2) {
+const uint8_t* Label::getPrintableChar(bool& bothUsed, const char char1, const char char2) {
 
 
     // Default return values, will be changed according to the situation.
@@ -349,7 +354,7 @@ const uint8_t* Label::getPrintableChar(bool& bothUsed, char char1, char char2) {
 
 
 
-Label::MoveType Label::getMoveChar(bool& bothUsed, char char1, char char2) {
+Label::MoveType Label::getMoveChar(bool& bothUsed, const char char1, const char char2) {
 
     MoveType move = MoveType::none;
     bothUsed = false;
@@ -370,15 +375,22 @@ Label::MoveType Label::getMoveChar(bool& bothUsed, char char1, char char2) {
 
 
 
-uint16_t Label::getWordWidth(char word[], uint16_t firstIndex, uint16_t stopIndex) {
+uint16_t Label::getWordWidth(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem) {
     // All characters are assumed to be printable
     uint16_t width = 0;
     uint16_t i = firstIndex;
     while(i < stopIndex) {
+
         // get the character that should be printed
         const uint8_t* c;
         bool escapeSequence;
-        c = getPrintableChar(escapeSequence, word[i], (i < stopIndex ? word[i+1] : '\0'));
+        if(progmem) {
+            c = getPrintableChar(escapeSequence, pgm_read_byte(&(word[i])), (i < stopIndex ? pgm_read_byte(&(word[i+1])) : '\0'));
+        }
+        else {
+            c = getPrintableChar(escapeSequence, word[i], (i < stopIndex ? word[i+1] : '\0'));
+        }
+
         // get its width
         uint8_t length;
         font.readCharLenght(c, length);
@@ -395,13 +407,13 @@ uint16_t Label::getWordWidth(char word[], uint16_t firstIndex, uint16_t stopInde
 
 
 
-bool Label::writeWord(char word[], uint16_t firstIndex, uint16_t stopIndex) {
+bool Label::writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem) {
     // All characters passed to this function are assumed to be printable.
     // If some non printable characters are fond they will be print as
     // "unknown"
 
     // get word width
-    const uint16_t width = getWordWidth(word, firstIndex, stopIndex);
+    const uint16_t width = getWordWidth(word, firstIndex, stopIndex, progmem);
 
     // check whether it is possible to print it and move the cursor if needed
     if(!cursor.prepare(width)) return false;
@@ -412,8 +424,12 @@ bool Label::writeWord(char word[], uint16_t firstIndex, uint16_t stopIndex) {
         // Get the printable character
         const uint8_t* c;
         bool escapeSequence;
-        c = getPrintableChar(escapeSequence, word[i], (i < stopIndex ? word[i+1] : '\0'));
-
+        if(progmem) {
+            c = getPrintableChar(escapeSequence, pgm_read_byte(&(word[i])), (i < stopIndex ? pgm_read_byte(&(word[i+1])) : '\0'));
+        }
+        else {
+            c = getPrintableChar(escapeSequence, word[i], (i < stopIndex ? word[i+1] : '\0'));
+        }
         if(!writeChar(c)) return false;
 
         // Go to next character

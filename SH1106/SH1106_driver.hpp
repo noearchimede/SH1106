@@ -52,7 +52,7 @@ public:
     @param data     array of bytes to be written
     @param length   length of the data array
     */
-    void writeData(uint8_t page, uint8_t column, uint8_t data[], uint8_t lenght);
+    void writeData(uint8_t page, uint8_t column, const uint8_t data[], uint8_t lenght);
 
     //! Write a single byte on the display
     /*!
@@ -62,7 +62,7 @@ public:
     is reached
     @param data     bytes to be written
     */
-    void writeData(uint8_t page, uint8_t column, uint8_t data);
+    void writeData(uint8_t page, uint8_t column, const uint8_t data);
 
 
     //! Chack whether an SH1106 is connected to the microcontroller
@@ -73,7 +73,7 @@ public:
 
     //! Turn off the display
     void turnOff();
-    
+
 protected:
 
     //! @name SH1106 basic commands
