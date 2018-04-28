@@ -1,4 +1,4 @@
-/*! @file Implementation of the I2C communication interface for SH1106
+/*! @file Implementation of the I2C communication i2c for SH1106
 */
 
 

@@ -20,8 +20,9 @@ public:
     // ### Constructor ### //
 
     //! Constructor
-    /*! @param i2c          An object of the i2c class derived from SH1106_interface which
-    will be used to communicate with the SH1106 chip
+    /*! @note This constructor must be used if the display is connected to the
+                microcontroller via the I2C interface.
+
     @param width        Width of the OLED screen (may be smaller than the 132
     bytes RAM of the SH1106)
     @param pages        Number of pages shown on screen. A page is 8 lines.
@@ -29,9 +30,12 @@ public:
     @param horizontalOffset RAM address of the first column. It may be not 0
     when the screen is less wide than the RAM (e.g. is
     sometimes 2 for 128 pixel screens).
+    @param i2cAddress address of the display on the i2c bus. defaults to 0x78.
+    @param i2cUseInternalPullups set whether to use internal or external pullup
+            resistors fot the i2c bus
 
     */
-    SH1106_driver(uint8_t pages = 8, uint8_t width = 132, uint8_t horizontalOffset = 0);
+    SH1106_driver(SH1106_interface & interface, uint8_t width = 132, uint8_t pages = 8, uint8_t horizontalOffset = 0);
 
     // we may create other constructors with different interfaces
 
@@ -43,8 +47,21 @@ public:
     */
     bool init();
 
+
+    //! Chack whether an SH1106 is connected to the microcontroller
+    bool connected();
+
+    //! Turn on the display
+    void turnOn();
+
+    //! Turn off the display
+    void turnOff();
+
+
     //! Write an array of bytes on the display
     /*!
+    May be used by the user, but he/she shouldn't usually need to
+
     @param page     page on wich the array will be written
     @param column   column on wich the first by will be written, then the
     column address will be incremented until (column+lenght)
@@ -56,6 +73,8 @@ public:
 
     //! Write a single byte on the display
     /*!
+    May be used by the user, but he/she shouldn't usually need to
+
     @param page     page on wich the array will be written
     @param column   column on wich the first by will be written, then the
     column address will be incremented until (column+lenght)
@@ -64,15 +83,6 @@ public:
     */
     void writeData(uint8_t page, uint8_t column, const uint8_t data);
 
-
-    //! Chack whether an SH1106 is connected to the microcontroller
-    bool checkConnection();
-
-    //! Turn on the display
-    void turnOn();
-
-    //! Turn off the display
-    void turnOff();
 
 protected:
 
@@ -112,7 +122,8 @@ protected:
 private:
 
     // Communication interface handler
-    SH1106_I2C interface;
+    SH1106_interface& interface;
+    // Here we could add other interfaces, e.g. SH1106_SPI spi;
 
     // width of the display, usually 128, sometimes 132
     uint8_t screenWidth;

@@ -4,9 +4,10 @@
 #include "SH1106_driver.hpp"
 
 
-SH1106_driver::SH1106_driver(uint8_t pages, uint8_t width, uint8_t horizontalOffset) :
-interface(0x78, true, 100000),
+// Constructor for i2c interface
+SH1106_driver::SH1106_driver(SH1106_interface & interface, uint8_t width, uint8_t pages, uint8_t horizontalOffset) :
 // 132 and 8 are the RAM limits
+interface(interface),
 screenWidth((width < 132) ? width : 132),
 screenPages((pages < 8) ? pages : 8),
 
@@ -71,7 +72,7 @@ void SH1106_driver::writeData(uint8_t page, uint8_t column, const uint8_t data) 
 
 
 
-bool SH1106_driver::checkConnection() {
+bool SH1106_driver::connected() {
     return interface.checkConnection();
 }
 

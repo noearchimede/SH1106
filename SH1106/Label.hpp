@@ -4,7 +4,7 @@
 #ifndef Label_hpp
 #define Label_hpp
 
-#include <inttypes.h>
+#include <Arduino.h> // for inttypes and the F() macro
 #include "SH1106_driver.hpp"
 #include "characters.hpp"
 
@@ -24,18 +24,18 @@ need to preserve (thus know) some content when overwriting).
 Since there isn't much available space in a single 8-bit page, the text size
 and font style are fixed.
 
-The text is printed using the `write()` function, wich takes either a string
-literal or a single NULL-terminated char array either a char array and its
-lenght as second parameter.
-The write function allows to write ASCII printable characters (i.e. ASCII
+The text is printed using the `print()` function, wich takes either a string
+literal or a NULL-terminated string either a char array and its lenght as
+a second parameter.
+The print function allows to write ASCII printable characters (i.e. ASCII
 characters 0x20 to 0x7E) as well as some special characters, obtained by
 writing the following two character sequences.
 The backslash '\' is used as escape character. Unless the user uses raw string
-literals, the escape character must be written twice to bass it to the class
+literals, the escape character must be written twice to pass it to the class
 as a single backslash is interpreted by the compiler: e.g. write "\\^" to get
 the escape sequence "\^" (up arrow).
 
-| "Action" characters                        ||
+| ASCII control characters                   ||
 |------|--------------------------------------|
 | \n   | newline                              |
 | \t   | tab                                  |
@@ -92,7 +92,7 @@ public:
     Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage);
 
 
-    //! Prints a NULL-TERMINATED string literal or char array on the screen
+    //! Print a NULL-TERMINATED string literal or char array on the screen
     /*! The text is encoded in ASCII but can contain a number of special
     sequences, listed in the class description. It will be print starting
     from the current cursor position and will be cut at the end of the
@@ -110,11 +110,47 @@ public:
     The function will write as many character as possible given the
     space available from current cursor position.
     */
-    bool print(char text[]);
+    bool print(const char * text);
 
-    //! Like `print(char)` but works for strings stored in PROGMEM
+    //! Print a NULL_terminated string in a given memory space (PROGMEM/RAM)
+    /*! @param progmem `true` if the `text` is stored in PROGMEM, `false` if it
+                        is in RAM
+    */
+    bool print(const char * text, bool progmem);
 
-    //! Prints a char array of given lenght on the screen.
+    //! Print a string literal put inside the `F()` macro
+    /*! Like `print(char)` but works for string literals put in PROGMEM by the
+    `F()` macro.
+    */
+    bool print(const __FlashStringHelper * text);
+
+    //! Print an unsigned integer in any base
+    /*! @param base Can be any number from 2 to 255 (0 and 1 will be read as 10)
+                    After base 16 the function will continue using letters for
+                    any additional digit.
+        @note for base 16 '0x' will be added before the first digit.
+
+        @param minus true if a minus sign must be added.
+        @note The minus sign will be added to any number, in any base: there
+              could be e.g. an exadecimal '-0'. If the minus sign is required
+              forn an hex number the '0x' prefix will not be printed.
+
+    */
+    bool print(unsigned long n, uint8_t base, bool negative = false);
+    //! same as above
+    bool print(unsigned int n, uint8_t base, bool negative = false);
+
+    //! Print a signed integer in base 10
+    bool print(long n);
+    //! same as above
+    bool print(int n);
+
+    //! Print a floating point number
+    /* @param digits Number of digits to display in the decimal part
+    */
+    bool print(double n, uint8_t digits = 2);
+
+    //! Print a char array of given lenght on the screen.
     /*! @see write(char text[])
     @param text A char array containing the text to print. NULL characters
     ('\0') will be ignored.
@@ -122,7 +158,6 @@ public:
     @param progmem Set to true if the `text` is stored in Flash memory (not RAM)
     */
     bool print(const char text[], uint16_t length, bool progmem);
-
 
     //! Clear the label
     /*! The cursor will be moved to (0,0)
@@ -166,17 +201,11 @@ public:
     bool space();
 
 
-    //! Move the cursor to a given location
-    /*! If the given position is out of the label the cursor will not be moved
-    and this function will return false.
-    */
-    bool moveCursor(uint8_t column, uint8_t page);
-
     //! Write a single byte on a given part of the label
     /*! The cursor will be moved to the "begin" location.
     The "begin" and "end" points are given in the form (beginX, beginY, endX, endY).
     `data` is a byte that will be repeatedly printed.
-    If the end position is seto to 0xff it will be changed to the end of the
+    If the end position is set to 0xff it will be changed to the end of the
     label.
 
     If called with the default arguments this function clears the entire
@@ -207,6 +236,34 @@ public:
     */
     bool writeArray(const uint8_t data[], uint8_t length);
 
+
+    //! Move the cursor to a given location
+    /*! If the given position is out of the label the cursor will not be moved
+    and this function will return false.
+    */
+    bool setCursor(uint8_t column, uint8_t page);
+
+    //! Get the current cursor position
+    void getCursor(uint8_t& column, uint8_t& page);
+
+    //! Get the remaining space on current line
+    uint8_t availableColumns();
+
+    //! Get the number of available pages under the cursor
+    uint8_t availablePages();
+
+    //! get the size of the label
+    void getSize(uint8_t& columns, uint8_t& pages);
+
+
+    //! Set the cursor to use the first line as the one after the last
+    /*! This setting allows the user to continuously write text to the label
+        without worrying about getting out of frame: after filling the last line
+        the cursor will move back to the first one.
+        It is possible to always clear the line under the cursor. More complex
+        text overwriting functions must be implemented by the user.
+    */
+    void setInfinite(bool enable, bool emptyLine);
 
 
 private:
@@ -285,7 +342,6 @@ private:
     // Instance of the class used to render characters
     PageFont font;
 
-
     // Information about the frame of the label
     struct Frame {
         Frame(uint8_t width, uint8_t height, uint8_t xPos, uint8_t yPos);
@@ -300,6 +356,11 @@ private:
         // Functions to convert a relative address to an absolute one
         uint8_t absoluteColumn (uint8_t relativeColumn);
         uint8_t absolutePage (uint8_t relativePage);
+
+        // Set by the user. If true when performing a newline from the last
+        // line the cursor will go back to first line.
+        bool infinite;
+        bool infiniteEmptyLine;
     };
     // frame used for all printing operations
     Frame frame;
@@ -311,7 +372,7 @@ private:
     // Cursor needs to use the private nested class Frame
     friend class Cursor;
     struct Cursor {
-        Cursor(Label::Frame & frame);
+        Cursor(Label::Frame & frame, Label & label);
         // Current cursor position
         uint8_t column, page;
         // Put the cursor on the next available location to write a given
@@ -325,6 +386,7 @@ private:
     private:
         // Reference to the frame struct of the enclosing class
         Label::Frame & frame;
+        Label & label;
     };
     Cursor cursor;
 

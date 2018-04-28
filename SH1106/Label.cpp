@@ -9,7 +9,7 @@ Label::Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t sta
 driver(display),
 frame((width - (2 * margin)), height, (startColumn + margin), startPage),
 clearFrame(width, height, startColumn, startPage),
-cursor(frame)
+cursor(frame, *this)
 {
 
 }
@@ -23,17 +23,147 @@ void Label::clear() {
 
 
 
-
-bool Label::print(char text[]) {
+// String (in RAM)
+bool Label::print(const char * text) {
     uint16_t i = 0;
-    if(!text[0]) return true;
     while(text[++i]);
-    return print(text, i, true);
+    return print(text, i, false);
+}
+
+
+// String literal in PROGMEM
+bool Label::print(const __FlashStringHelper * text) {
+    PGM_P flashPtr = reinterpret_cast<PGM_P>(text);
+    uint16_t i = 0;
+    while(pgm_read_byte(&(flashPtr[++i])));
+    return print(flashPtr, i, true);
+}
+
+
+// String with memory specifier
+bool Label::print(const char *text, bool progmem) {
+    uint16_t i = 0;
+    if(progmem)
+    while(pgm_read_byte(&(text[++i])));
+    else
+    while(text[++i]);
+    return print(text, i, progmem);
 }
 
 
 
+// Number: Natuarls
+bool Label::print(unsigned int n, uint8_t base, bool negative) {
+    return print((unsigned long)n, base, negative);
+}
+bool Label::print(unsigned long n, uint8_t base, bool negative) {
+    // This function was taken from the Print class in the Arduino framework
+    // and sligtly modified
+
+    // dimension: 8*4 binary digits, minus sign/hex symbol, null character
+    char buf[8 * sizeof(long) + 2 + 1];
+    char *str = &buf[sizeof(buf) - 1];
+
+    *str = '\0';
+
+    // prevent crash if called with base == 1
+    if (base < 2) base = 10;
+
+    do {
+        char c = n % base;
+        n /= base;
+        *--str = c < 10 ? c + '0' : c + 'A' - 10;
+    } while(n);
+
+    // add special symbols (- for negative numbers or 0x for exadecimal base)
+    if(negative) *--str = '-';
+    else if (base == 16) {
+        *--str = 'x';
+        *--str = '0';
+    }
+
+    return print(str);
+}
+
+
+// Number: (signed) integers
+bool Label::print(int n) {
+    return print((long)n);
+}
+bool Label::print(long n) {
+    if(n < 0) return print((unsigned long)-n, 10, true);
+    else return print((unsigned long)n, 10, false);
+}
+
+
+// Number: Rationals
+bool Label::print(double n, uint8_t digits) {
+    // Some parts of this functions were copied from the Print class in the
+    // Arduino framework
+
+    if (isnan(n)) return print(F("nan"));
+    if (isinf(n)) return print(F("inf"));
+    // The following two numbers are marked as "determined empirically" in
+    // the Arduino Print library implementation
+    if (n > 4294967040.0) return print (F("ovf"));
+    if (n <-4294967040.0) return print (F("ovf"));
+
+    // dimension: minus sign, 10 digits in integral part, dot, 8 digits in
+    // decimal part, null character
+    char buf[21];
+    char *str = &buf[sizeof(buf) - 1];
+
+    *--str = '\0';
+
+    // Round correctly so that print(1.999, 2) prints as "2.00"
+    double rounding = 0.5;
+    for (uint8_t i = 0; i < digits; ++i) rounding /= 10.0;
+    n += rounding;
+    // Extract the integer part of the number
+    unsigned long intPart = (unsigned long)n;
+    double rem = n - (double)intPart;
+
+    // Extract digits from the remainder
+    for(int i = 0; i < digits; i++) rem *= 10;
+    // write in string
+    do {
+        char c = (unsigned long)rem % 10;
+        rem /= 10;
+        *--str = c + '0';
+    } while((unsigned long)rem);
+
+    // Print the decimal point, but only if there are digits beyond
+    if (digits > 0) {
+      *--str = '.';
+    }
+
+    // count digits in intPart
+    uint8_t intDigits = 0;
+    for(uint8_t x = intPart; x /= 10; intDigits++);
+    // write in string
+    do {
+        char c = intPart % 10;
+        intPart /= 10;
+        *--str = c + '0';
+    } while(intPart);
+
+    // Handle negative numbers
+    if (n < 0.0)
+    {
+       *--str = '-';
+       n = -n;
+    }
+
+    return print(str);
+}
+
+
+
+// Print: base function taking a char array of given length (not a C string)
 bool Label::print(const char text[], uint16_t length, bool progmem) {
+
+    // if the string is empty
+    if(!text[0]) return true;
 
     uint16_t wordStartIndex = 0;
     bool charsToPrint = false;
@@ -182,20 +312,6 @@ bool Label::space() {
 
 
 
-bool Label::moveCursor(uint8_t column, uint8_t page) {
-    if(frame.isInFrame(column, page)) {
-        cursor.column = column;
-        cursor.page = page;
-        return true;
-    }
-    return false;
-}
-
-
-
-
-
-
 void Label::fill(uint8_t data, uint8_t beginCol, uint8_t beginPag, uint8_t endCol, uint8_t endPag) {
 
     // correct the indexing error created by the margin (see e.g. the
@@ -255,6 +371,7 @@ void Label::fill(uint8_t data, uint8_t beginCol, uint8_t beginPag, uint8_t endCo
 
 
 
+
 bool Label::writeArray(const uint8_t data [], uint8_t length) {
 
     // cut the array, if needed, to fit in current page
@@ -272,6 +389,46 @@ bool Label::writeArray(const uint8_t data [], uint8_t length) {
 }
 
 
+
+
+
+
+bool Label::setCursor(uint8_t column, uint8_t page) {
+    if(frame.isInFrame(column, page)) {
+        cursor.column = column;
+        cursor.page = page;
+        return true;
+    }
+    return false;
+}
+
+void Label::getCursor(uint8_t& column, uint8_t& page) {
+    column = cursor.column;
+    page = cursor.page;
+}
+
+
+
+uint8_t Label::availableColumns() {
+    return frame.columns - cursor.column;
+}
+
+uint8_t Label::availablePages() {
+    return frame.pages - cursor.page;
+}
+
+
+void Label::getSize(uint8_t& columns, uint8_t& pages) {
+    columns = frame.columns;
+    pages = frame.pages;
+}
+
+
+
+void Label::setInfinite(bool enable, bool emptyLine) {
+    frame.infinite = enable;
+    frame.infiniteEmptyLine = emptyLine;
+}
 
 
 
@@ -477,6 +634,10 @@ Label::Frame::Frame(uint8_t width, uint8_t height, uint8_t xPos, uint8_t yPos) {
     // Position
     colShift = xPos;
     pagShift = yPos;
+
+    // settings
+    infinite = false;
+    infiniteEmptyLine = false;
 }
 
 
@@ -513,8 +674,9 @@ uint8_t Label::Frame::absolutePage(uint8_t relativePage) {
 
 
 
-Label::Cursor::Cursor(Frame& frame) :
-frame(frame)
+Label::Cursor::Cursor(Frame& frame, Label& label) :
+frame(frame),
+label(label)
 {
     column = 0;
     page = 0;
@@ -526,17 +688,21 @@ bool Label::Cursor::prepare(uint8_t textWidth) {
 
     // there is enough space starting from current location, do nothing
     if(column + textWidth < frame.columns) return true;
+
+    bool availableLine = false;
+    if(page + 1 < frame.pages) availableLine = true;
+    else if(frame.infinite) availableLine = true;
+
     // there isn't, try to move to next line but before doing it check if the
     // word would fit in an empty line.
-    if(textWidth > frame.columns) {
+    if(textWidth > frame.columns && availableLine) {
         // the word is too long to be written on a single page, but there are
         // enough pages to write it. Don't move to next line.
         return true;
     }
-    if(page + 1 < frame.pages) {
+    if(availableLine) {
         // ok, there is another available line
-        page++;
-        column = 0;
+        move(0xff, true);
         return true;
     }
     // no available page, don't move and return false
@@ -549,10 +715,21 @@ bool Label::Cursor::move(uint8_t steps, bool stopAtNL) {
     // if needed go to another line
     while(column + steps >= frame.columns) {
         steps -= frame.columns - column;
-        page++;
+        if(frame.infiniteEmptyLine) {
+            uint8_t p = page;
+            label.fill(0x00, 0, p + 1, 0xFF,  p + 2);
+            page = p + 1;
+        }
+        else page++;
         column = 0;
-        // return false if the cursor went past the last line
-        if(page >= frame.pages) return false;
+        // the cursor went past the last line
+        if(page >= frame.pages) {
+            if(frame.infinite) {
+                if(frame.infiniteEmptyLine)  label.fill(0x00, 0, 1, 0xFF, 1);
+                page = 0;
+            }
+            else return false;
+        }
         // stopAtNL option
         if(stopAtNL) {
             return true;
