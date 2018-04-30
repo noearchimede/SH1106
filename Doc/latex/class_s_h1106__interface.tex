@@ -1,0 +1,153 @@
+\section{S\+H1106\+\_\+interface Class Reference}
+\label{class_s_h1106__interface}\index{S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}}
+
+
+Abstract class to describe any interface to communicate with S\+H1106.  
+
+
+
+
+{\ttfamily \#include $<$S\+H1106\+\_\+interfaces.\+hpp$>$}
+
+Inheritance diagram for S\+H1106\+\_\+interface\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_s_h1106__interface}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \textbf{ init} ()=0
+\begin{DoxyCompactList}\small\item\em Initialize the communication interface. \end{DoxyCompactList}\item 
+virtual bool \textbf{ check\+Connection} ()=0
+\begin{DoxyCompactList}\small\item\em Returns true if a device is connected (possibly check whether it is an S\+H1106) \end{DoxyCompactList}\item 
+virtual void \textbf{ send\+Command} (uint8\+\_\+t command)=0
+\begin{DoxyCompactList}\small\item\em Send a command to the S\+H1106. \end{DoxyCompactList}\item 
+virtual void \textbf{ write\+R\+AM} (const uint8\+\_\+t data[$\,$], uint8\+\_\+t length)=0
+\begin{DoxyCompactList}\small\item\em Write an array of data into the R\+AM of the S\+H1106. \end{DoxyCompactList}\item 
+virtual void \textbf{ write\+R\+AM} (const uint8\+\_\+t data)=0
+\begin{DoxyCompactList}\small\item\em Write a byte of data into the R\+AM of the S\+H1106. \end{DoxyCompactList}\item 
+virtual bool \textbf{ is\+Enabled} ()=0
+\begin{DoxyCompactList}\small\item\em Check whether the display is on or off. \end{DoxyCompactList}\item 
+virtual bool \textbf{ is\+Busy} ()=0
+\begin{DoxyCompactList}\small\item\em Check whether the device is busy (i.\+e. it is executing a command) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Abstract class to describe any interface to communicate with S\+H1106. 
+
+The S\+H1106 O\+L\+ED Controller features many different communication interfaces\+:
+
+8-\/bit 6800-\/series parallel 8-\/bit 8080-\/series parallel 3-\/wire S\+PI 4-\/wire S\+PI I2C
+
+This library was originally intended designed to use i2c, but this interface should not be hardcoded in the higher level functions. Hence this abstract class will be used in all higher level classes and methods declaration instead of an interface-\/specific \char`\"{}concrete\char`\"{} class. This way changing the communication interface will only require a single change in the constructor of the \char`\"{}next level\char`\"{} class, i.\+e. S\+H1106 (by passing e.\+g. an S\+H1106\+\_\+3\+S\+PI object instead of an \doxyref{S\+H1106\+\_\+\+I2C}{p.}{class_s_h1106___i2_c} one). If there is not any class for the desider interface yet, the user will need to write a class derived from this one. 
+
+Definition at line 36 of file S\+H1106\+\_\+interfaces.\+hpp.
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{class_s_h1106__interface_ac47fbd90dbd95e0ad39c19e0913a4a0a}} 
+\index{S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}!init@{init}}
+\index{init@{init}!S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}}
+\subsubsection{init()}
+{\footnotesize\ttfamily virtual void S\+H1106\+\_\+interface\+::init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Initialize the communication interface. 
+
+
+
+Implemented in \textbf{ S\+H1106\+\_\+\+I2C} \doxyref{}{p.}{class_s_h1106___i2_c_ae6c5529336068137a1060e120204c344}.
+
+\mbox{\label{class_s_h1106__interface_a2ff24f7c29cbb1eda6e61c448f405708}} 
+\index{S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}!check\+Connection@{check\+Connection}}
+\index{check\+Connection@{check\+Connection}!S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}}
+\subsubsection{check\+Connection()}
+{\footnotesize\ttfamily virtual bool S\+H1106\+\_\+interface\+::check\+Connection (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Returns true if a device is connected (possibly check whether it is an S\+H1106) 
+
+
+
+Implemented in \textbf{ S\+H1106\+\_\+\+I2C} \doxyref{}{p.}{class_s_h1106___i2_c_a077880b268efac4f8e77af1864d3eac4}.
+
+\mbox{\label{class_s_h1106__interface_a22f10681d2b53b39bba4307e5c6c6efa}} 
+\index{S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}!send\+Command@{send\+Command}}
+\index{send\+Command@{send\+Command}!S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}}
+\subsubsection{send\+Command()}
+{\footnotesize\ttfamily virtual void S\+H1106\+\_\+interface\+::send\+Command (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{command }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Send a command to the S\+H1106. 
+
+
+
+Implemented in \textbf{ S\+H1106\+\_\+\+I2C} \doxyref{}{p.}{class_s_h1106___i2_c_a118ff2bd4a7fc36ed9ece89306c60540}.
+
+\mbox{\label{class_s_h1106__interface_ae987e7ec271292ce4b8c39b0d2ba2d5e}} 
+\index{S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}!write\+R\+AM@{write\+R\+AM}}
+\index{write\+R\+AM@{write\+R\+AM}!S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}}
+\subsubsection{write\+R\+A\+M()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily virtual void S\+H1106\+\_\+interface\+::write\+R\+AM (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{data[$\,$],  }\item[{uint8\+\_\+t}]{length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Write an array of data into the R\+AM of the S\+H1106. 
+
+
+
+Implemented in \textbf{ S\+H1106\+\_\+\+I2C} \doxyref{}{p.}{class_s_h1106___i2_c_a9fba08e53f1a6ca36c8dc4faef4f949d}.
+
+\mbox{\label{class_s_h1106__interface_a20725a0fa95fd6849333d2605ca3b090}} 
+\index{S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}!write\+R\+AM@{write\+R\+AM}}
+\index{write\+R\+AM@{write\+R\+AM}!S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}}
+\subsubsection{write\+R\+A\+M()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily virtual void S\+H1106\+\_\+interface\+::write\+R\+AM (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Write a byte of data into the R\+AM of the S\+H1106. 
+
+
+
+Implemented in \textbf{ S\+H1106\+\_\+\+I2C} \doxyref{}{p.}{class_s_h1106___i2_c_af4e00228a3e7c11496de302f10edc6ae}.
+
+\mbox{\label{class_s_h1106__interface_a7d1baf8c3e41ff19f05b03a38b1eca7a}} 
+\index{S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}!is\+Enabled@{is\+Enabled}}
+\index{is\+Enabled@{is\+Enabled}!S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}}
+\subsubsection{is\+Enabled()}
+{\footnotesize\ttfamily virtual bool S\+H1106\+\_\+interface\+::is\+Enabled (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Check whether the display is on or off. 
+
+
+
+Implemented in \textbf{ S\+H1106\+\_\+\+I2C} \doxyref{}{p.}{class_s_h1106___i2_c_af5bc8c96f70163d6215423c07f94da49}.
+
+\mbox{\label{class_s_h1106__interface_a9ff43dbad062c27049498497324d958e}} 
+\index{S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}!is\+Busy@{is\+Busy}}
+\index{is\+Busy@{is\+Busy}!S\+H1106\+\_\+interface@{S\+H1106\+\_\+interface}}
+\subsubsection{is\+Busy()}
+{\footnotesize\ttfamily virtual bool S\+H1106\+\_\+interface\+::is\+Busy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Check whether the device is busy (i.\+e. it is executing a command) 
+
+
+
+Implemented in \textbf{ S\+H1106\+\_\+\+I2C} \doxyref{}{p.}{class_s_h1106___i2_c_acec7469a16d4f9ac2d0cac76eb75c544}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/noe/\+Documents/\+Robot/\+Librerie/\+S\+H1106/\+S\+H1106/S\+H1106\+\_\+interfaces.\+hpp\end{DoxyCompactItemize}

@@ -10,7 +10,8 @@
 
 
 
-/*!
+/*! @brief Text printing class
+
 The Label class allows to write any ASCII character plus some other symbols in
 a frame of a given size set by the user in the constructor. There is no limit
 to the amount of labels on a single display, as long as there is enough free
@@ -37,9 +38,9 @@ the escape sequence "\^" (up arrow).
 
 | ASCII control characters                   ||
 |------|--------------------------------------|
-| \n   | newline                              |
-| \t   | tab                                  |
-| \r   | carriage return; clears current line |
+| \\n   | newline                              |
+| \\t   | tab                                  |
+| \\r   | carriage return; clears current line |
 
 | Accents ||
 |------|---|
@@ -55,7 +56,7 @@ the escape sequence "\^" (up arrow).
 | -^   | UP RIGHT    |
 | ->   | RIGHT       |
 | -v   | DOWN RIGHT  |
-| \v   | DOWN        |
+| \\v  | DOWN        |
 | v-   | DOWN LEFT   |
 | <-   | LEFT        |
 | ^-   | UP LEFT     |
@@ -63,19 +64,19 @@ the escape sequence "\^" (up arrow).
 _Note: up sign is a circumflex accent, down is a lower case 'v'_
 
 | Digits at exponent position                                       ||
-|--------------------------------------------------------------------|
+|------|-------------------------------------------------------------|
 | ^x   | where x is any number from 0 to 9                           |
 | ^x^y | two or more exponent digits need repeated escape sequences  |
 
 | Other special characters            ||
 |-----|--------------------------------|
 | ^o  | (lower case 'o') degree symbol |
-| \c  | copyright symbol ©             |
+| \\c | copyright symbol ©             |
 
 
-| Escape character             ||
-|-----|-------------------------|
-| \\  | write it twice to print |
+| Escape character              ||
+|------|-------------------------|
+| \\\\ | write it twice to print |
 
 
 The escape character may be used within any of the above sequences to tell the

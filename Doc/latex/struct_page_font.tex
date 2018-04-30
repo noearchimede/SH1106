@@ -1,0 +1,67 @@
+\section{Page\+Font Struct Reference}
+\label{struct_page_font}\index{Page\+Font@{Page\+Font}}
+
+
+Definition of a set of characters designed to fit an 8-\/bit page.  
+
+
+
+
+{\ttfamily \#include $<$Characters.\+hpp$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\label{struct_page_font_a29c695e276ed9d83bca9e53b0eefc45e}} 
+enum {\bfseries Special\+Char} \{ {\bfseries copyright}, 
+{\bfseries degree}, 
+{\bfseries unknown}, 
+{\bfseries large\+Space}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\label{struct_page_font_a1807e0c9c7beb63a3159182b00a6be4c}} 
+void {\bfseries read\+Char\+Array} (const uint8\+\_\+t $\ast$ptr, uint8\+\_\+t \&length, uint8\+\_\+t $\ast$data)
+\item 
+\mbox{\label{struct_page_font_a48d06dcdee4b25dee5d08e0829268ca7}} 
+void {\bfseries read\+Char\+Lenght} (const uint8\+\_\+t $\ast$ptr, uint8\+\_\+t \&length)
+\item 
+\mbox{\label{struct_page_font_a4894ed6be3d32d363be6a9d277c3d611}} 
+const uint8\+\_\+t $\ast$ {\bfseries get\+Ascii} (char character)
+\item 
+\mbox{\label{struct_page_font_a2a1dee12a41e8f7428f0c7d249619818}} 
+const uint8\+\_\+t $\ast$ {\bfseries get\+Unknown} ()
+\item 
+\mbox{\label{struct_page_font_a9c753e2368b5ea7ba3c58c10b26f8648}} 
+const uint8\+\_\+t $\ast$ {\bfseries get\+Accented\+Vowel} (char vowel)
+\item 
+\mbox{\label{struct_page_font_acdf3d8dcc712d362b9f503b52cee5719}} 
+const uint8\+\_\+t $\ast$ {\bfseries get\+Arrow} (unsigned int clock\+Wise8\+Steps)
+\item 
+\mbox{\label{struct_page_font_a6913e7a4a77ea6851fee6edee001cd67}} 
+const uint8\+\_\+t $\ast$ {\bfseries get\+Exp\+Digit} (unsigned int digit)
+\item 
+\mbox{\label{struct_page_font_a795a83aba40e91cecd3ec0e3b32d0512}} 
+const uint8\+\_\+t $\ast$ {\bfseries get\+Special\+Char} (Special\+Char name)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\label{struct_page_font_af13eda8abbbc85cedb046421f79a3fdf}} 
+static constexpr unsigned int {\bfseries max\+Width} = 8
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Definition of a set of characters designed to fit an 8-\/bit page. 
+
+Definition at line 10 of file Characters.\+hpp.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/noe/\+Documents/\+Robot/\+Librerie/\+S\+H1106/\+S\+H1106/Characters.\+hpp\item 
+/\+Users/noe/\+Documents/\+Robot/\+Librerie/\+S\+H1106/\+S\+H1106/Characters.\+cpp\end{DoxyCompactItemize}

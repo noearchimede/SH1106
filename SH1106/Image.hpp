@@ -8,7 +8,8 @@
 #include "SH1106_driver.hpp"
 
 
-/*!
+/*! @brief Image drawing class
+
 Tha Image class allows to write a bitmap image on a given area of the screen.
 The frame can have any size in width, but it's height must be a multiple of 8
 as well as its y position because it needs to fit an integer number of pages.

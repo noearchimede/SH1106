@@ -5,7 +5,7 @@ those of all the classes derived from it.
 */
 
 
-/*! @class Abstract class: describes any interface to communicate with SH1106
+/*! @brief Abstract class to describe any interface to communicate with SH1106
 
 The SH1106 OLED Controller features many different communication interfaces:
 
@@ -61,7 +61,8 @@ public:
 
 
 
-/*! @class This class allows to communicate with an SH1106 through i2c interface
+/*! @brief I2C interface implementation class
+This class allows to communicate with an SH1106 through i2c interface
 
 This class provides low level i2c functions specific to the ATmega328
 microcontroller (like `init()` and `start()`) as well as higher level functions
