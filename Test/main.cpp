@@ -107,7 +107,6 @@ void setup() { Serial.begin(9600);
     screen.clear();
 
 
-
     // ### IMAGE ### //
 
     // Fill the image frame with a single repeated byte
