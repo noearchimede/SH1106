@@ -5,7 +5,13 @@ description of all characters. */
 #include <avr/pgmspace.h> // for PROGMEM
 
 
+
+// Normal space.
 static const PROGMEM uint8_t space [4] = { 3 , 0x00, 0x00, 0x00};
+// This space is used by the number printing functions to align numbers.
+// It mus be as wide as a digit (and all the digit must have the same width).
+static const PROGMEM uint8_t largeSpace [6] = {5, 0x00, 0x00, 0x00, 0x00, 0x0};
+
 
 // Generated with an Excel worksheet
 static const PROGMEM uint8_t   a   [5] = { 4 , 0x24, 0x54, 0x54, 0x78};
@@ -47,7 +53,7 @@ static const PROGMEM uint8_t   I   [2] = { 1 , 0x7F};
 static const PROGMEM uint8_t   J   [4] = { 3 , 0x60, 0x40, 0x7F};
 static const PROGMEM uint8_t   K   [5] = { 4 , 0x7F, 0xC, 0x12, 0x61};
 static const PROGMEM uint8_t   L   [5] = { 4 , 0x7F, 0x40, 0x40, 0x40};
-static const PROGMEM uint8_t   M   [8] = { 7 , 0x7F, 0x03, 0x06, 0xC, 0x06, 0x03, 0x7F};
+static const PROGMEM uint8_t   M   [8] = { 7 , 0x7F, 0x02, 0x04, 0x08, 0x04, 0x02, 0x7F};
 static const PROGMEM uint8_t   N   [7] = { 6 , 0x7F, 0x03, 0xE, 0x38, 0x60, 0x7F};
 static const PROGMEM uint8_t   O   [6] = { 5 , 0x3E, 0x41, 0x41, 0x41, 0x3E};
 static const PROGMEM uint8_t   P   [5] = { 4 , 0x7F, 0x09, 0x09, 0x06};
@@ -315,7 +321,7 @@ const uint8_t * PageFont::getSpecialChar(PageFont::SpecialChar name) {
         case SpecialChar::copyright: return copyright;
         case SpecialChar::degree:    return degree;
         case SpecialChar::unknown:   return unknown;
-
+        case SpecialChar::largeSpace: return largeSpace;
         default: return unknown;
     }
 }

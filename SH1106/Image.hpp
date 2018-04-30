@@ -33,8 +33,10 @@ public:
     //! Draw an image in the label
     /*! The size of the image must match the frame size. If it doesn't the
         behaviour is not defined.
+        @param progmem true if the array is stored in PROGMEM, false if it is
+        in RAM.
     */
-    void draw(const uint8_t image[]);
+    void draw(const uint8_t image[], bool progmem);
 
     //! Clear the frame
     /*! The cursor will be moved to (0,0)

@@ -114,7 +114,7 @@ public:
 
     //! Print a NULL_terminated string in a given memory space (PROGMEM/RAM)
     /*! @param progmem `true` if the `text` is stored in PROGMEM, `false` if it
-                        is in RAM
+    is in RAM
     */
     bool print(const char * text, bool progmem);
 
@@ -124,31 +124,39 @@ public:
     */
     bool print(const __FlashStringHelper * text);
 
-    //! Print an unsigned integer in any base
-    /*! @param base Can be any number from 2 to 255 (0 and 1 will be read as 10)
-                    After base 16 the function will continue using letters for
-                    any additional digit.
-        @note for base 16 '0x' will be added before the first digit.
+    //! Print a single ASCII character
+    bool print(char c);
 
-        @param minus true if a minus sign must be added.
-        @note The minus sign will be added to any number, in any base: there
-              could be e.g. an exadecimal '-0'. If the minus sign is required
-              forn an hex number the '0x' prefix will not be printed.
 
-    */
-    bool print(unsigned long n, uint8_t base, bool negative = false);
-    //! same as above
-    bool print(unsigned int n, uint8_t base, bool negative = false);
-
-    //! Print a signed integer in base 10
-    bool print(long n);
-    //! same as above
-    bool print(int n);
+    //! Print an integer number
+    /* @param base The base to show the number. For base 16 the '0x' symbol will
+    be prepended unless the number is negative.
+    @param minWidth Minimum number of digits. Unused positions will be filled
+    with spaces. This option allows to align numbers on differen lines. */
+    bool print(unsigned char n, uint8_t base = 10, uint8_t minWidth = 0);
+    //! See above
+    /*! To distinguish this function from the single character printing the base
+    parameter is not optional here */
+    bool print(char n, uint8_t base, uint8_t minWidth = 0);
+    //! See above
+    bool print(unsigned int n, uint8_t base = 10, uint8_t minWidth = 0);
+    //! See above
+    bool print(int n, uint8_t base = 10, uint8_t minWidth = 0);
+    //! See above
+    bool print(unsigned long n, uint8_t base = 10, uint8_t minWidth = 0);
+    //! See aboveß
+    bool print(long n, uint8_t base = 10, uint8_t minWidth = 0);
 
     //! Print a floating point number
-    /* @param digits Number of digits to display in the decimal part
-    */
-    bool print(double n, uint8_t digits = 2);
+    /*  The base is always 10.
+    @param fractDigits  Number of digits to display in the fractional part.
+    Unused spaces will be filled with 0s.
+    @param minIntDigits Minimum number of digits in the integer part.
+    Unused positions will be filled with spaces. */
+    bool print(float n, uint8_t fractDigits = 2, uint8_t minIntDigits = 0);
+    //! same as above
+    bool print(double n, uint8_t fractDigits = 2, uint8_t minIntDigits = 0);
+
 
     //! Print a char array of given lenght on the screen.
     /*! @see write(char text[])
@@ -258,10 +266,10 @@ public:
 
     //! Set the cursor to use the first line as the one after the last
     /*! This setting allows the user to continuously write text to the label
-        without worrying about getting out of frame: after filling the last line
-        the cursor will move back to the first one.
-        It is possible to always clear the line under the cursor. More complex
-        text overwriting functions must be implemented by the user.
+    without worrying about getting out of frame: after filling the last line
+    the cursor will move back to the first one.
+    It is possible to always clear the line under the cursor. More complex
+    text overwriting functions must be implemented by the user.
     */
     void setInfinite(bool enable, bool emptyLine);
 
@@ -281,6 +289,9 @@ private:
 
     // Margin on each side of the label in pixels
     static constexpr unsigned int margin = 1;
+
+    // Default tab anchors spacing
+    static constexpr unsigned int defaultTab = 36;
 
 
     // ### FUNCTIONS ### //
@@ -332,6 +343,11 @@ private:
     // Write a character
     bool writeChar(const uint8_t *);
 
+
+    // Print an integer
+    bool printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negative);
+    // Print a float
+    bool printFloat(double n, uint8_t fractDigits, uint8_t minIntDigits);
 
 
     // ### VARIABLES ###

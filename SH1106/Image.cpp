@@ -11,15 +11,12 @@ frame(width, height, startColumn, startPage)
 {
 }
 
-
-
-
-void Image::draw(const uint8_t *image) {
+void Image::draw(const uint8_t *image, bool progmem) {
     uint16_t i = 0;
     for(uint8_t c = 0; c < frame.columns; c++) {
         for(uint8_t p = frame.pages; p > 0 ; p--) {
-            driver.writeData(frame.absolutePage(p - 1), frame.absoluteColumn(c), image[i]);
-            delay(500);
+            if(progmem) driver.writeData(frame.absolutePage(p - 1), frame.absoluteColumn(c), pgm_read_byte(&image[i]));
+            else driver.writeData(frame.absolutePage(p - 1), frame.absoluteColumn(c), image[i]);
             i++;
         }
     }
@@ -35,11 +32,11 @@ void Image::fill(uint8_t data) {
 }
 
 void Image::fill(uint8_t *pattern, uint8_t length) {
-    for(int c = 0; c < frame.columns; c++) {
-        for(int p = frame.pages; p; p--) {
-            for(int i = 0; i < length; i++) {
-                driver.writeData(frame.absolutePage(p), frame.absoluteColumn(c), pattern[i]);
-            }
+    uint8_t i = 0;
+    for(int p = 0; p < frame.pages; p++) {
+        for(int c = 0; c < frame.columns; c++) {
+            driver.writeData(frame.absolutePage(p), frame.absoluteColumn(c), pattern[i]);
+            if(++i == length) i = 0;
         }
     }
 }

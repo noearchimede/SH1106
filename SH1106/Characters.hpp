@@ -41,7 +41,7 @@ struct PageFont {
     const uint8_t * getAccentedVowel(char vowel);
     const uint8_t * getArrow(unsigned int clockWise8Steps);
     const uint8_t * getExpDigit(unsigned int digit);
-    enum class SpecialChar {copyright, degree, unknown};
+    enum class SpecialChar {copyright, degree, unknown, largeSpace};
     const uint8_t * getSpecialChar(SpecialChar name);
 
 };

@@ -51,111 +51,45 @@ bool Label::print(const char *text, bool progmem) {
 }
 
 
-
-// Number: Natuarls
-bool Label::print(unsigned int n, uint8_t base, bool negative) {
-    return print((unsigned long)n, base, negative);
-}
-bool Label::print(unsigned long n, uint8_t base, bool negative) {
-    // This function was taken from the Print class in the Arduino framework
-    // and sligtly modified
-
-    // dimension: 8*4 binary digits, minus sign/hex symbol, null character
-    char buf[8 * sizeof(long) + 2 + 1];
-    char *str = &buf[sizeof(buf) - 1];
-
-    *str = '\0';
-
-    // prevent crash if called with base == 1
-    if (base < 2) base = 10;
-
-    do {
-        char c = n % base;
-        n /= base;
-        *--str = c < 10 ? c + '0' : c + 'A' - 10;
-    } while(n);
-
-    // add special symbols (- for negative numbers or 0x for exadecimal base)
-    if(negative) *--str = '-';
-    else if (base == 16) {
-        *--str = 'x';
-        *--str = '0';
-    }
-
-    return print(str);
+// single character
+bool Label::print(char c) {
+    return print(&c, 1, false);
 }
 
 
-// Number: (signed) integers
-bool Label::print(int n) {
-    return print((long)n);
+// # Print numbers #
+
+// Integers
+bool Label::print(unsigned char n, uint8_t base, uint8_t minWidth) {
+    return printInt(n, minWidth, base, false);
 }
-bool Label::print(long n) {
-    if(n < 0) return print((unsigned long)-n, 10, true);
-    else return print((unsigned long)n, 10, false);
+bool Label::print(char n, uint8_t base, uint8_t minWidth) {
+    if(n > 0) return printInt((unsigned long) n, minWidth, base, false);
+    else return printInt((unsigned long) -n, minWidth, base, true);
+}
+bool Label::print(unsigned int n, uint8_t base, uint8_t minWidth) {
+    return printInt(n, minWidth, base, false);
+}
+bool Label::print(int n, uint8_t base, uint8_t minWidth) {
+    if(n > 0) return printInt((unsigned long) n, minWidth, base, false);
+    else return printInt((unsigned long) -n, minWidth, base, true);
+}
+bool Label::print(unsigned long n, uint8_t base, uint8_t minWidth) {
+    return printInt(n, minWidth, base, false);
+}
+bool Label::print(long n, uint8_t base, uint8_t minWidth) {
+    if(n > 0) return printInt((unsigned long) n, minWidth, base, false);
+    else return printInt((unsigned long) -n, minWidth, base, true);
 }
 
-
-// Number: Rationals
-bool Label::print(double n, uint8_t digits) {
-    // Some parts of this functions were copied from the Print class in the
-    // Arduino framework
-
-    if (isnan(n)) return print(F("nan"));
-    if (isinf(n)) return print(F("inf"));
-    // The following two numbers are marked as "determined empirically" in
-    // the Arduino Print library implementation
-    if (n > 4294967040.0) return print (F("ovf"));
-    if (n <-4294967040.0) return print (F("ovf"));
-
-    // dimension: minus sign, 10 digits in integral part, dot, 8 digits in
-    // decimal part, null character
-    char buf[21];
-    char *str = &buf[sizeof(buf) - 1];
-
-    *--str = '\0';
-
-    // Round correctly so that print(1.999, 2) prints as "2.00"
-    double rounding = 0.5;
-    for (uint8_t i = 0; i < digits; ++i) rounding /= 10.0;
-    n += rounding;
-    // Extract the integer part of the number
-    unsigned long intPart = (unsigned long)n;
-    double rem = n - (double)intPart;
-
-    // Extract digits from the remainder
-    for(int i = 0; i < digits; i++) rem *= 10;
-    // write in string
-    do {
-        char c = (unsigned long)rem % 10;
-        rem /= 10;
-        *--str = c + '0';
-    } while((unsigned long)rem);
-
-    // Print the decimal point, but only if there are digits beyond
-    if (digits > 0) {
-      *--str = '.';
-    }
-
-    // count digits in intPart
-    uint8_t intDigits = 0;
-    for(uint8_t x = intPart; x /= 10; intDigits++);
-    // write in string
-    do {
-        char c = intPart % 10;
-        intPart /= 10;
-        *--str = c + '0';
-    } while(intPart);
-
-    // Handle negative numbers
-    if (n < 0.0)
-    {
-       *--str = '-';
-       n = -n;
-    }
-
-    return print(str);
+// Reals
+bool Label::print(float n, uint8_t fractDigits, uint8_t minIntDigits) {
+    return printFloat((double)n, fractDigits, minIntDigits);
 }
+bool Label::print(double n, uint8_t fractDigits, uint8_t minIntDigits) {
+    return printFloat(n, fractDigits, minIntDigits);
+}
+
 
 
 
@@ -216,7 +150,7 @@ bool Label::print(const char text[], uint16_t length, bool progmem) {
         }
 
         // The only possible escapes here are the "action" ones (e.g. "\\t").
-        // The other are analyzed while measuring and printing a word.
+        // The others are analyzed while measuring and printing a word.
         if(escapeSequence) i++;
         i++;
     }
@@ -234,7 +168,7 @@ bool Label::print(const char text[], uint16_t length, bool progmem) {
 
 
 bool Label::tab(uint8_t anchor) {
-    constexpr uint8_t defaultTab = 25;
+
 
     if(anchor >= frame.columns) return false;
 
@@ -273,8 +207,7 @@ bool Label::tab(uint8_t anchor) {
 
 
 bool Label::newline() {
-    cursor.page++;
-    cursor.column = 0;
+    cursor.move(0xff, true);
     if(frame.isInFrame(cursor.column, cursor.page)) return true;
     return false;
 }
@@ -475,7 +408,7 @@ const uint8_t* Label::getPrintableChar(bool& bothUsed, const char char1, const c
     // degree symbol
     else if((char1 == escape || char1 == '^') && char2 == 'o') c = font.getSpecialChar(PageFont::SpecialChar::degree);
     // Copyright symbol
-    else if(char1 == escape && char2 == 'c') c = font.getSpecialChar(PageFont::SpecialChar::copyright);
+    else if(char1 == escape && char2 == 'c') c =  font.getSpecialChar(PageFont::SpecialChar::copyright);
 
     // Double escape character
     else if(char1 == escape && char2 == escape) c = font.getAscii(escape);
@@ -500,7 +433,11 @@ const uint8_t* Label::getPrintableChar(bool& bothUsed, const char char1, const c
     else {
         // plain ASCII text (will be a real character from ASCII '!' to '~',
         // i.e. 0x20 to 0x7E, and a printable 'unknown' character otherwise)
-        c = font.getAscii(char1);
+        // with one single exception: the vertical tab will be interpreted
+        // as a space as wide as a character (it is used to align numbers).
+        if (char1 == 0x0B) c = font.getSpecialChar(PageFont::SpecialChar::largeSpace);
+
+        else c = font.getAscii(char1);
         // Update default return value
         bothUsed = false;
     }
@@ -622,6 +559,129 @@ bool Label::writeChar(const uint8_t * c) {
 
 
 
+// ### Printing of numbers ### //
+
+
+bool Label::printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negative) {
+    // This function was taken from the Print class in the Arduino framework
+    // and sligtly modified
+
+    // dimension: 8*4 binary digits, minus sign/hex symbol, null character
+    char buf[8 * sizeof(long) + 2 + 1];
+    char *str = &buf[sizeof(buf) - 1];
+
+    *str = '\0';
+
+    // prevent crash if called with base == 1
+    if (base < 2) base = 10;
+
+    do {
+        char c = n % base;
+        n /= base;
+        *--str = c < 10 ? c + '0' : c + 'A' - 10;
+    } while(n);
+
+    // add special symbols (- for negative numbers or 0x for exadecimal base)
+    if(negative) *--str = '-';
+    else if (base == 16) {
+        *--str = 'x';
+        *--str = '0';
+    }
+
+    // if needed add some spaces to reach the minimum width
+    uint8_t width = &buf[sizeof(buf) - 1] - str;
+    int8_t spaces = minWidth - width;
+    // 0x0B is ascii vertical tab, interpredet by this class as a space as wide
+    // as one digit
+    if(spaces > 0) while(spaces--) *--str = 0x0B;
+
+    return print(str);
+}
+
+
+bool Label::printFloat(double n, uint8_t fractDigits, uint8_t minIntDigits) {
+    // Some parts of this functions were copied from the Print class in the
+    // Arduino framework
+
+    // dimension: minus sign, 10 digits in integral part, dot, 8 digits in
+    // decimal part, null character, (arbitrarly) 4 spaces for alignment
+    char buf[25];
+    char *str = &buf[sizeof(buf) - 1];
+
+    char *dotAddr = str; //used later for alignment
+
+    *--str = '\0';
+
+    // Handle invalid numbers
+    // The two numbers for overflow are marked as "determined empirically" in
+    // the Arduino Print library implementation
+    if (isnan(n)) {*--str = 'n';*--str = 'a';*--str = 'n';}
+    else if (isinf(n)) {*--str = 'f';*--str = 'n';*--str = 'i';}
+    else if (n >  4294967040.0) {*--str = 'f';*--str = 'o';*--str = 'v';}
+    else if (n <- 4294967040.0) {*--str = 'f';*--str = 'o';*--str = 'v';}
+
+    // N is a valid number
+    else {
+
+        // Round correctly so that print(1.999, 2) prints as "2.00"
+        double rounding = 0.5;
+        for (uint8_t i = 0; i < fractDigits; ++i) rounding /= 10.0;
+        n += rounding;
+
+        // Extract the integer part of the number
+        unsigned long intPart = (unsigned long)n;
+        double rem = n - (double)intPart;
+
+        // Extract digits from the remainder
+        uint8_t actualFractDigits = 0;
+        for(;actualFractDigits < fractDigits; actualFractDigits++) rem *= 10;
+        // write in string
+        do {
+            char c = (unsigned long)rem % 10;
+            rem /= 10;
+            *--str = c + '0';
+        } while(--actualFractDigits);
+
+        // Print the decimal point, but only if there are digits beyond
+        if (fractDigits > 0) {
+            dotAddr = str;
+            *--str = '.';
+        }
+
+        // count digits in intPart
+        uint8_t intDigits = 0;
+        for(uint8_t x = intPart; x /= 10; intDigits++);
+        // write in string
+        do {
+            char c = intPart % 10;
+            intPart /= 10;
+            *--str = c + '0';
+        } while(intPart);
+
+        // Handle negative numbers
+        if (n < 0.0)
+        {
+            *--str = '-';
+            n = -n;
+        }
+
+    }
+
+    // if needed add some spaces to reach the minimum width
+    uint8_t width = dotAddr - str;
+    int8_t spaces = minIntDigits - width + 1;
+    // 0x0B is ascii vertical tab, interpredet by this class as a space as wide
+    // as one digit
+    if(spaces > 0) while(spaces--) *--str = 0x0B;
+    // additional spaces if the number will be printed as a three letter code
+    if(isnan(n) || isinf(n) || n >  4294967040.0 || n <- 4294967040.0)
+    for(uint8_t i = 0; i < fractDigits; i++) *--str = 0x0B;
+
+    return print(str);
+}
+
+
+
 
 // ### Frame ### //
 
@@ -647,23 +707,11 @@ bool Label::Frame::isInFrame(uint8_t relativeColumn, uint8_t relativePage) {
 }
 
 
-
-// In case of invalid parameters, the first line/column of the label may be
-// overwritten. This is preferred to overwriting other parts of the screen and
-// shows that this class is somewhere ill-formed.
 uint8_t Label::Frame::absoluteColumn(uint8_t relativeColumn) {
-    if(relativeColumn < columns)
     return relativeColumn + colShift;
-    else
-    return colShift;
 }
-
-
 uint8_t Label::Frame::absolutePage(uint8_t relativePage) {
-    if(relativePage < pages)
     return relativePage + pagShift;
-    else
-    return pagShift;
 }
 
 
@@ -686,12 +734,16 @@ label(label)
 
 bool Label::Cursor::prepare(uint8_t textWidth) {
 
+    // The cursor is already out of frame
+    if(page >= frame.pages || column >= frame.columns) return false;
+
     // there is enough space starting from current location, do nothing
     if(column + textWidth < frame.columns) return true;
 
-    bool availableLine = false;
+    bool availableLine;
     if(page + 1 < frame.pages) availableLine = true;
     else if(frame.infinite) availableLine = true;
+    else availableLine = false;
 
     // there isn't, try to move to next line but before doing it check if the
     // word would fit in an empty line.
@@ -717,7 +769,8 @@ bool Label::Cursor::move(uint8_t steps, bool stopAtNL) {
         steps -= frame.columns - column;
         if(frame.infiniteEmptyLine) {
             uint8_t p = page;
-            label.fill(0x00, 0, p + 1, 0xFF,  p + 2);
+            label.fill(0x00, 0, p + 2, 0xFF,  p + 2);
+            label.fill(0x00, 0, p + 1, 0xFF,  p + 1);
             page = p + 1;
         }
         else page++;
