@@ -64,5 +64,5 @@ v  v  v  v  v
 ---
 
 For more information please refer to the documentation in comments, wich can be
-extracted with Doxygen and is available [Here](http://htmlpreview.github.io/?),
+extracted with Doxygen and is available [here](http://htmlpreview.github.io/?https://github.com/noearchimede/SH1106/blob/master/Doc/html/index.html),
 and to the example program.
