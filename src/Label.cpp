@@ -64,21 +64,21 @@ bool Label::print(unsigned char n, uint8_t base, uint8_t minWidth) {
     return printInt(n, minWidth, base, false);
 }
 bool Label::print(char n, uint8_t base, uint8_t minWidth) {
-    if(n > 0) return printInt((unsigned long) n, minWidth, base, false);
+    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false);
     else return printInt((unsigned long) -n, minWidth, base, true);
 }
 bool Label::print(unsigned int n, uint8_t base, uint8_t minWidth) {
     return printInt(n, minWidth, base, false);
 }
 bool Label::print(int n, uint8_t base, uint8_t minWidth) {
-    if(n > 0) return printInt((unsigned long) n, minWidth, base, false);
+    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false);
     else return printInt((unsigned long) -n, minWidth, base, true);
 }
 bool Label::print(unsigned long n, uint8_t base, uint8_t minWidth) {
     return printInt(n, minWidth, base, false);
 }
 bool Label::print(long n, uint8_t base, uint8_t minWidth) {
-    if(n > 0) return printInt((unsigned long) n, minWidth, base, false);
+    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false);
     else return printInt((unsigned long) -n, minWidth, base, true);
 }
 
