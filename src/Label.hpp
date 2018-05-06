@@ -243,7 +243,7 @@ public:
     some bytes were printed.
 
     */
-    bool writeArray(const uint8_t data[], uint8_t length);
+    bool printArray(const uint8_t data[], uint8_t length);
 
 
     //! Move the cursor to a given location
