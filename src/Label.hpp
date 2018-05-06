@@ -133,20 +133,22 @@ public:
     /* @param base The base to show the number. For base 16 the '0x' symbol will
     be prepended unless the number is negative.
     @param minWidth Minimum number of digits. Unused positions will be filled
-    with spaces. This option allows to align numbers on differen lines. */
-    bool print(unsigned char n, uint8_t base = 10, uint8_t minWidth = 0);
+    with spaces. This option allows to align numbers on differen lines.
+    @param leadingZeros Fill all the unused spaces of minWidth (if any) with
+    0s instead of spaces. */
+    bool print(unsigned char n, uint8_t base = 10, uint8_t minWidth = 0, bool leadingZeros = false);
     //! See above
     /*! To distinguish this function from the single character printing the base
     parameter is not optional here */
-    bool print(char n, uint8_t base, uint8_t minWidth = 0);
+    bool print(char n, uint8_t base, uint8_t minWidth = 0, bool leadingZeros = false);
     //! See above
-    bool print(unsigned int n, uint8_t base = 10, uint8_t minWidth = 0);
+    bool print(unsigned int n, uint8_t base = 10, uint8_t minWidth = 0, bool leadingZeros = false);
     //! See above
-    bool print(int n, uint8_t base = 10, uint8_t minWidth = 0);
+    bool print(int n, uint8_t base = 10, uint8_t minWidth = 0, bool leadingZeros = false);
     //! See above
-    bool print(unsigned long n, uint8_t base = 10, uint8_t minWidth = 0);
+    bool print(unsigned long n, uint8_t base = 10, uint8_t minWidth = 0, bool leadingZeros = false);
     //! See aboveß
-    bool print(long n, uint8_t base = 10, uint8_t minWidth = 0);
+    bool print(long n, uint8_t base = 10, uint8_t minWidth = 0, bool leadingZeros = false);
 
     //! Print a floating point number
     /*  The base is always 10.
@@ -346,7 +348,7 @@ private:
 
 
     // Print an integer
-    bool printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negative);
+    bool printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negative, bool leadingZeros);
     // Print a float
     bool printFloat(double n, uint8_t fractDigits, uint8_t minIntDigits);
 

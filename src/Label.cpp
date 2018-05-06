@@ -60,26 +60,26 @@ bool Label::print(char c) {
 // # Print numbers #
 
 // Integers
-bool Label::print(unsigned char n, uint8_t base, uint8_t minWidth) {
-    return printInt(n, minWidth, base, false);
+bool Label::print(unsigned char n, uint8_t base, uint8_t minWidth, bool leadingZeros) {
+    return printInt(n, minWidth, base, false, leadingZeros);
 }
-bool Label::print(char n, uint8_t base, uint8_t minWidth) {
-    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false);
-    else return printInt((unsigned long) -n, minWidth, base, true);
+bool Label::print(char n, uint8_t base, uint8_t minWidth, bool leadingZeros) {
+    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false, leadingZeros);
+    else return printInt((unsigned long) -n, minWidth, base, true, leadingZeros);
 }
-bool Label::print(unsigned int n, uint8_t base, uint8_t minWidth) {
-    return printInt(n, minWidth, base, false);
+bool Label::print(unsigned int n, uint8_t base, uint8_t minWidth, bool leadingZeros) {
+    return printInt(n, minWidth, base, false, leadingZeros);
 }
-bool Label::print(int n, uint8_t base, uint8_t minWidth) {
-    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false);
-    else return printInt((unsigned long) -n, minWidth, base, true);
+bool Label::print(int n, uint8_t base, uint8_t minWidth, bool leadingZeros) {
+    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false, leadingZeros);
+    else return printInt((unsigned long) -n, minWidth, base, true, leadingZeros);
 }
-bool Label::print(unsigned long n, uint8_t base, uint8_t minWidth) {
-    return printInt(n, minWidth, base, false);
+bool Label::print(unsigned long n, uint8_t base, uint8_t minWidth, bool leadingZeros) {
+    return printInt(n, minWidth, base, false, leadingZeros);
 }
-bool Label::print(long n, uint8_t base, uint8_t minWidth) {
-    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false);
-    else return printInt((unsigned long) -n, minWidth, base, true);
+bool Label::print(long n, uint8_t base, uint8_t minWidth, bool leadingZeros) {
+    if(n >= 0) return printInt((unsigned long) n, minWidth, base, false, leadingZeros);
+    else return printInt((unsigned long) -n, minWidth, base, true, leadingZeros);
 }
 
 // Reals
@@ -313,7 +313,7 @@ bool Label::printArray(const uint8_t data [], uint8_t length) {
         length = frame.columns - cursor.column;
         cut = true;
     }
-    
+
     if(!cursor.prepare(length)) return false;
 
     driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), data, length);
@@ -564,7 +564,7 @@ bool Label::writeChar(const uint8_t * c) {
 // ### Printing of numbers ### //
 
 
-bool Label::printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negative) {
+bool Label::printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negative, bool leadingZeros) {
     // This function was taken from the Print class in the Arduino framework
     // and sligtly modified
 
@@ -593,9 +593,12 @@ bool Label::printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negat
     // if needed add some spaces to reach the minimum width
     uint8_t width = &buf[sizeof(buf) - 1] - str;
     int8_t spaces = minWidth - width;
-    // 0x0B is ascii vertical tab, interpredet by this class as a space as wide
-    // as one digit
-    if(spaces > 0) while(spaces--) *--str = 0x0B;
+    while(spaces-- > 0) {
+        if(leadingZeros) *--str = '0';
+        // 0x0B is ascii vertical tab, interpredet by this class as a space as wide
+        // as one digit
+        else *--str = 0x0B;
+    }
 
     return print(str);
 }
