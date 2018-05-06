@@ -305,7 +305,7 @@ void Label::fill(uint8_t data, uint8_t beginCol, uint8_t beginPag, uint8_t endCo
 
 
 
-bool Label::writeArray(const uint8_t data [], uint8_t length) {
+bool Label::printArray(const uint8_t data [], uint8_t length) {
 
     // cut the array, if needed, to fit in current page
     bool cut = false;
@@ -313,6 +313,8 @@ bool Label::writeArray(const uint8_t data [], uint8_t length) {
         length = frame.columns - cursor.column;
         cut = true;
     }
+    
+    if(!cursor.prepare(length)) return false;
 
     driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), data, length);
 
