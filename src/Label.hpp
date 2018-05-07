@@ -130,10 +130,15 @@ public:
 
 
     //! Print an integer number
-    /* @param base The base to show the number. For base 16 the '0x' symbol will
+    /*!
+    @param base The base to show the number. For base 16 the '0x' symbol will
     be prepended unless the number is negative.
-    @param minWidth Minimum number of digits. Unused positions will be filled
-    with spaces. This option allows to align numbers on differen lines.
+    @param minWidth Minimum number of digits: unused positions will be filled
+    with spaces. This option allows to nicely align numbers in lists. If there
+    isn't enough space on current line to print `minWidth` characters the number
+    will be right aligned, so that its last digit ends on last column. Using
+    a far too large minimum width (e.g. 0xFF) a right-aligned list of number can
+    be created.
     @param leadingZeros Fill all the unused spaces of minWidth (if any) with
     0s instead of spaces. */
     bool print(unsigned char n, uint8_t base = 10, uint8_t minWidth = 0, bool leadingZeros = false);

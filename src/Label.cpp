@@ -532,6 +532,7 @@ bool Label::writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex
         if(escapeSequence) i++;
         i++;
     }
+
     return true;
 }
 
@@ -545,7 +546,8 @@ bool Label::writeChar(const uint8_t * c) {
     uint8_t data[font.maxWidth];
     font.readCharArray(c, length, data);
 
-    if(!cursor.prepare(length)) return false;
+    if(!cursor.prepare(length))
+    return false;
 
     // Print character
     driver.writeData(frame.absolutePage(cursor.page), frame.absoluteColumn(cursor.column), data, length);
@@ -561,7 +563,7 @@ bool Label::writeChar(const uint8_t * c) {
 
 
 
-// ### Printing of numbers ### //
+// ### Print numbers ### //
 
 
 bool Label::printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negative, bool leadingZeros) {
@@ -590,9 +592,19 @@ bool Label::printInt(unsigned long n, uint8_t minWidth, uint8_t base, bool negat
         *--str = '0';
     }
 
-    // if needed add some spaces to reach the minimum width
+    // if needed add some spaces or 0s to reach the minimum width, but stop if
+    // they would cause an implicit newline
     uint8_t width = &buf[sizeof(buf) - 1] - str;
     int8_t spaces = minWidth - width;
+    // Find out how many spaces can be added on current line
+    uint8_t availablePositions = (frame.columns - cursor.column) / (font.digitWidth + 1) - width;
+    // if some spaces are to be omitted, shift the cursor to get a nice right
+    // alignment
+    if(availablePositions < spaces) {
+        cursor.column += (frame.columns - cursor.column) % (font.digitWidth + 1) - 1;
+        spaces = availablePositions;
+    }
+
     while(spaces-- > 0) {
         if(leadingZeros) *--str = '0';
         // 0x0B is ascii vertical tab, interpredet by this class as a space as wide
