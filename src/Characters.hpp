@@ -10,8 +10,9 @@
 struct PageFont {
 
     // width of the largest character
-    static constexpr unsigned int maxWidth = 8;
-
+    static constexpr unsigned int maxWidth = 7;
+    // width of a digit
+    static constexpr unsigned int digitWidth = 5;
 
     // Extract useful data from the charaacter array pointerd to by `ptr`
     // If `ptr` is not a poitner to the beginning of a character array stored in
