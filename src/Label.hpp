@@ -325,7 +325,7 @@ private:
     const uint8_t* getPrintableChar(bool& bothUsed, const char char1, const char char2 = '\0');
 
 
-    // Get the width in pixels of a word with charCount characters.
+    // Get the printed width of the characters in the array between two indexes.
     // The string must not contain newlines, tabs or carriage returns and
     // should not contain spaces.
     // Only lements [firstIndex] to [stopIndex - 1] of the array will be
