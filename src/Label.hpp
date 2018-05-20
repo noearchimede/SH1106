@@ -195,7 +195,7 @@ public:
     @param length Lengt of the text array.
     @param progmem Set to true if the `text` is stored in Flash memory (not RAM)
     */
-    bool print(const char text[], uint16_t length, bool progmem);
+    bool print(const char text[], uint16_t length, bool progmem = false);
 
     //! Clear the label
     /*! The cursor will be moved to (0,0)
@@ -325,14 +325,6 @@ private:
 
 
     // ### FUNCTIONS ### //
-
-    // Base print function
-    // Print: base function taking a char array of given length (not a C string)
-    // text: A char array containing the text to print. NULL characters
-    // will be ignored.
-    // length: Lengt of the text array.
-    // progmem: Set to true if the `text` is stored in Flash memory (not RAM)
-    bool print(const char text[], uint16_t length, bool progmem = false);
 
     // Print a string of characters and spaces until the end of the line is reached
     // This function allows to align simple text on the center and right side of the
