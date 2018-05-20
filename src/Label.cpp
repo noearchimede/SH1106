@@ -70,7 +70,7 @@ bool Label::printSingleLine(const char * text, Label::Alignment alignment) {
 
 
 // String literal in PROGMEM
-bool Label::print(const __FlashStringHelper * text) {
+bool Label::printSingleLine(const __FlashStringHelper * text) {
     PGM_P flashPtr = reinterpret_cast<PGM_P>(text);
     uint16_t i = 0;
     while(pgm_read_byte(&(flashPtr[++i])));
@@ -79,7 +79,7 @@ bool Label::print(const __FlashStringHelper * text) {
 
 
 // String with memory specifier
-bool Label::print(const char *text, bool progmem) {
+bool Label::printSingleLine(const char *text, bool progmem) {
     uint16_t i = 0;
     if(progmem)
     while(pgm_read_byte(&(text[++i])));
@@ -90,7 +90,7 @@ bool Label::print(const char *text, bool progmem) {
 
 
 // single character
-bool Label::print(char c) {
+bool Label::printSingleLine(char c) {
     return printSingleLine(&c, 1, false, alignment);
 }
 
