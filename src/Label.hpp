@@ -92,6 +92,8 @@ public:
     //! Consturctor - provides label size and position
     Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage);
 
+    //! Text alignment in the frame
+    enum class Alignment {left, center, right};
 
     //! Print a NULL-TERMINATED string literal or char array on the screen
     /*! The text is encoded in ASCII but can contain a number of special
@@ -160,15 +162,6 @@ public:
     //! same as above
     bool print(double n, uint8_t fractDigits = 2, uint8_t minIntDigits = 0);
 
-
-    //! Print a char array of given lenght on the screen.
-    /*! @see write(char text[])
-    @param text A char array containing the text to print. NULL characters
-    ('\0') will be ignored.
-    @param length Lengt of the text array.
-    @param progmem Set to true if the `text` is stored in Flash memory (not RAM)
-    */
-    bool print(const char text[], uint16_t length, bool progmem);
 
     //! Clear the label
     /*! The cursor will be moved to (0,0)
@@ -299,6 +292,21 @@ private:
 
     // ### FUNCTIONS ### //
 
+    // Base print function
+    // Print: base function taking a char array of given length (not a C string)
+    // text: A char array containing the text to print. NULL characters
+    // will be ignored.
+    // length: Lengt of the text array.
+    // progmem: Set to true if the `text` is stored in Flash memory (not RAM)
+    bool print(const char text[], uint16_t length, bool progmem = false);
+
+    // Print a string of characters and spaces until the end of the line is reached
+    // This function allows to align simple text on the center and right side of the
+    // label, but doesn't compute action characters
+    bool printSingleLine(const char text[], uint16_t length, bool progmem, bool singleLine, Alignment alignment);
+
+
+
     // This enum is used as return type of the `getMoveChar()` function
     enum class MoveType {none, space, tab, newline, carriageReturn};
     // Check whether `char1` or the char1-char2 sequence are an "action"
@@ -341,7 +349,10 @@ private:
     // considered.
     // The progmem parameter must be true if the data array is stored in Flash
     // memory and false if it is in RAM
-    bool writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem);
+    // CutLastWord == true allows the function to print part of the last word
+    // if there isn't enough placew to print it all.
+    // This is useful in small labels where one single word may be printed
+    bool writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem, bool cutLastWord = false);
 
     // Write a character
     bool writeChar(const uint8_t *);
