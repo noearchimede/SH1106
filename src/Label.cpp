@@ -57,6 +57,46 @@ bool Label::print(char c) {
 }
 
 
+
+// # print on a single line # //
+
+
+// String (in RAM)
+bool Label::printSingleLine(const char * text, Label::Alignment alignment) {
+    uint16_t i = 0;
+    while(text[++i]);
+    return printSingleLine(text, i, false, alignment);
+}
+
+
+// String literal in PROGMEM
+bool Label::print(const __FlashStringHelper * text) {
+    PGM_P flashPtr = reinterpret_cast<PGM_P>(text);
+    uint16_t i = 0;
+    while(pgm_read_byte(&(flashPtr[++i])));
+    return printSingleLine(flashPtr, i, true, alignment);
+}
+
+
+// String with memory specifier
+bool Label::print(const char *text, bool progmem) {
+    uint16_t i = 0;
+    if(progmem)
+    while(pgm_read_byte(&(text[++i])));
+    else
+    while(text[++i]);
+    return printSingleLine(text, i, progmem, alignment);
+}
+
+
+// single character
+bool Label::print(char c) {
+    return printSingleLine(&c, 1, false, alignment);
+}
+
+
+
+
 // # Print numbers #
 
 // Integers
@@ -89,80 +129,6 @@ bool Label::print(float n, uint8_t fractDigits, uint8_t minIntDigits) {
 bool Label::print(double n, uint8_t fractDigits, uint8_t minIntDigits) {
     return printFloat(n, fractDigits, minIntDigits);
 }
-
-
-
-
-// Print: base function taking a char array of given length (not a C string)
-bool Label::print(const char text[], uint16_t length, bool progmem) {
-
-    // if the string is empty
-    if(!text[0]) return true;
-
-    uint16_t wordStartIndex = 0;
-    bool charsToPrint = false;
-
-    uint16_t i = 0;
-    while(i < length) {
-        bool escapeSequence;
-        MoveType move;
-        if(progmem) {
-            move = getMoveChar(escapeSequence, pgm_read_byte(&(text[i])), (i+1 < length? pgm_read_byte(&(text[i+1])) : '\0'));
-        }
-        else {
-            move = getMoveChar(escapeSequence, text[i], (i+1 < length? text[i+1] : '\0'));
-        }
-
-        if(move != MoveType::none) {
-            // Print last word
-            if(charsToPrint) {
-                charsToPrint = false;
-                if(!writeWord(text, wordStartIndex, i, progmem)) return false;
-            }
-
-            // Perform required action on cursor
-            switch(move) {
-                case MoveType::space:
-                // avoid spaces at the beginning of a line. This restriction
-                // doesn't apply to the `space()` function.`
-                if(cursor.column != 0)
-                if(!space()) return false;
-                break;
-                case MoveType::tab:
-                if(!tab()) return false;
-                break;
-                case MoveType::newline:
-                if(!newline()) return false;
-                break;
-                case MoveType::carriageReturn:
-                if(!carriageReturnClear()) return false;
-                break;
-                case MoveType::none: break; // Can't happen
-            }
-        }
-        // else we know that the character has to be interpreted as text
-        else {
-            // If this is the first printable character after a space, tab, ...
-            if(!charsToPrint) {
-                wordStartIndex = i;
-                charsToPrint = true;
-            }
-        }
-
-        // The only possible escapes here are the "action" ones (e.g. "\\t").
-        // The others are analyzed while measuring and printing a word.
-        if(escapeSequence) i++;
-        i++;
-    }
-    // Print last word
-    if(charsToPrint) {
-        charsToPrint = false;
-        if(!writeWord(text, wordStartIndex, i, progmem))  return false;
-    }
-
-    return true;
-}
-
 
 
 
@@ -367,9 +333,111 @@ void Label::setInfinite(bool enable, bool emptyLine) {
 
 
 
+
+// Print: base function taking a char array of given length (not a C string)
+bool Label::print(const char text[], uint16_t length, bool progmem) {
+
+    // if the string is empty
+    if(!text[0]) return true;
+
+    uint16_t wordStartIndex = 0;
+    bool charsToPrint = false;
+
+    // Iterate over the entire string
+    uint16_t i = 0;
+    while(i < length) {
+
+        // This variable will be set to true if two characters have beetween
+        // joined together to print one single special character
+        bool escapeSequence;
+
+        // Check wheter the characrter at current index is an action one
+        MoveType move;
+        if(progmem) {
+            move = getMoveChar(escapeSequence, pgm_read_byte(&(text[i])), (i+1 < length? pgm_read_byte(&(text[i+1])) : '\0'));
+        }
+        else {
+            move = getMoveChar(escapeSequence, text[i], (i+1 < length? text[i+1] : '\0'));
+        }
+
+        // If it is an action character
+        if(move != MoveType::none) {
+            // Print last word
+            if(charsToPrint) {
+                charsToPrint = false;
+                if(!writeWord(text, wordStartIndex, i, progmem)) return false;
+            }
+
+            // Perform required action on cursor
+            switch(move) {
+                case MoveType::space:
+                // avoid spaces at the beginning of a line. This restriction
+                // doesn't apply to the `space()` function.`
+                if(cursor.column != 0)
+                if(!space()) return false;
+                break;
+                case MoveType::tab:
+                if(!tab()) return false;
+                break;
+                case MoveType::newline:
+                if(!newline()) return false;
+                break;
+                case MoveType::carriageReturn:
+                if(!carriageReturnClear()) return false;
+                break;
+                case MoveType::none: break; // Can't happen
+            }
+        }
+        // else we know that the character has to be interpreted as text
+        else {
+            // If this is the first printable character after a space, tab, ...
+            if(!charsToPrint) {
+                wordStartIndex = i;
+                charsToPrint = true;
+            }
+        }
+
+        // The only possible escapes here are the "action" ones (e.g. "\\t").
+        // The others are analyzed while measuring and printing a word.
+        if(escapeSequence) i++;
+        i++;
+    }
+    // Print last word
+    if(charsToPrint) {
+        charsToPrint = false;
+        if(!writeWord(text, wordStartIndex, i, progmem))  return false;
+    }
+
+    return true;
+}
+
+
 // ################################ PRIVATE ################################# //
 
+// Print a string of characters and spaces until the end of the line is reached
+// This function allows to align simple text on the center and right side of the
+// label, but doesn't compute action characters
+bool Label::printSingleLine(const char text[], uint16_t length, bool progmem, Alignment alignment) {
 
+    // if the string is empty
+    if(!text[0]) return true;
+
+    // Print all the string as if it were a single word (spaces are valid
+    // characters)
+    uint16_t width = getWordWidth(text, 0, length, progmem);
+    int16_t freeSpace =  availableColumns() - width;
+
+    // Special (not left) alignment
+    if(freeSpace > 0) {
+        // Right
+        if(alignment == Alignment::right) cursor.column += freeSpace - 1;
+        // center
+        if(alignment == Alignment::center) cursor.column += freeSpace / 2;
+    }
+    writeWord(text, 0, length, progmem, true);
+
+    return true;
+}
 
 
 const uint8_t* Label::getPrintableChar(bool& bothUsed, const char char1, const char char2) {
@@ -503,16 +571,21 @@ uint16_t Label::getWordWidth(const char word[], uint16_t firstIndex, uint16_t st
 
 
 
-bool Label::writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem) {
+bool Label::writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem, bool cutLastWord) {
     // All characters passed to this function are assumed to be printable.
-    // If some non printable characters are fond they will be print as
+    // If some non printable characters are found they will be print as
     // "unknown"
 
     // get word width
     const uint16_t width = getWordWidth(word, firstIndex, stopIndex, progmem);
 
     // check whether it is possible to print it and move the cursor if needed
-    if(!cursor.prepare(width)) return false;
+    if(!cursor.prepare(width)) {
+        if(!cutLastWord) return false;
+        // The cursor didn't move. There could still be space for some
+        // characters. The writeChar() function will take care of not printing
+        // out of bounds.
+    }
 
 
     uint16_t i = firstIndex;

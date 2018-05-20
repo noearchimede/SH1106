@@ -92,6 +92,8 @@ public:
     //! Consturctor - provides label size and position
     Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage);
 
+    //! Text alignment in the frame
+    enum class Alignment {left, center, right};
 
     //! Print a NULL-TERMINATED string literal or char array on the screen
     /*! The text is encoded in ASCII but can contain a number of special
@@ -129,6 +131,32 @@ public:
     bool print(char c);
 
 
+    //! Print a string on a single line
+    /*!
+     * This function prints some text on one line. It mostly behaves like
+     * `print(const char *)` with three differences:
+     *
+     * - an additional argument, `alignment`, may be given to align the text on
+     *   the right, the centre or the left (default) of the label.
+     * - "action characters" (\r, \t, \n) are not supported and will be printed
+     *   as an unknown character (a black rectangle)
+     * - if the text doesn't fit in the label and there is some space after the
+     *   last entirely printed word, that space will be filled with the first
+     *   characters of the next word (the `print()` functions would leave it
+     *   clear)
+     */
+    bool printSingleLine(const char * text, Alignment alignment =  Alignment::left);
+
+    //! @see `printSingleLine(const char *, Alignment)` and `print(const char *, bool);
+    bool printSingleLine(const char * text, bool progmem, Alignment alignment =  Alignment::left);
+
+    //! @see `printSingleLine(const char *, Alignment)` and `print(const __FlashStringHelper *);`
+    bool printSingleLine(const __FlashStringHelper * text, Alignment alignment =  Alignment::left);
+
+    //! @see `printSingleLine(const char *, Alignment)` and `print(char)`
+    bool printSingleLine(char c, Alignment alignment =  Alignment::left);
+
+
     //! Print an integer number
     /*!
     @param base The base to show the number. For base 16 the '0x' symbol will
@@ -164,7 +192,6 @@ public:
     bool print(float n, uint8_t fractDigits = 2, uint8_t minIntDigits = 0);
     //! same as above
     bool print(double n, uint8_t fractDigits = 2, uint8_t minIntDigits = 0);
-
 
     //! Print a char array of given lenght on the screen.
     /*! @see write(char text[])
@@ -304,6 +331,21 @@ private:
 
     // ### FUNCTIONS ### //
 
+    // Base print function
+    // Print: base function taking a char array of given length (not a C string)
+    // text: A char array containing the text to print. NULL characters
+    // will be ignored.
+    // length: Lengt of the text array.
+    // progmem: Set to true if the `text` is stored in Flash memory (not RAM)
+    bool print(const char text[], uint16_t length, bool progmem = false);
+
+    // Print a string of characters and spaces until the end of the line is reached
+    // This function allows to align simple text on the center and right side of the
+    // label, but doesn't compute action characters
+    bool printSingleLine(const char text[], uint16_t length, bool progmem, Alignment alignment);
+
+
+
     // This enum is used as return type of the `getMoveChar()` function
     enum class MoveType {none, space, tab, newline, carriageReturn};
     // Check whether `char1` or the char1-char2 sequence are an "action"
@@ -346,7 +388,10 @@ private:
     // considered.
     // The progmem parameter must be true if the data array is stored in Flash
     // memory and false if it is in RAM
-    bool writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem);
+    // CutLastWord == true allows the function to print part of the last word
+    // if there isn't enough placew to print it all.
+    // This is useful in small labels where one single word may be printed
+    bool writeWord(const char word[], uint16_t firstIndex, uint16_t stopIndex, bool progmem, bool cutLastWord = false);
 
     // Write a character
     bool writeChar(const uint8_t *);
