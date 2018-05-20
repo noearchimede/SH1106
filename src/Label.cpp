@@ -57,6 +57,46 @@ bool Label::print(char c) {
 }
 
 
+
+// # print on a single line # //
+
+
+// String (in RAM)
+bool Label::printSingleLine(const char * text, Label::Alignment alignment) {
+    uint16_t i = 0;
+    while(text[++i]);
+    return printSingleLine(text, i, false, alignment);
+}
+
+
+// String literal in PROGMEM
+bool Label::print(const __FlashStringHelper * text) {
+    PGM_P flashPtr = reinterpret_cast<PGM_P>(text);
+    uint16_t i = 0;
+    while(pgm_read_byte(&(flashPtr[++i])));
+    return printSingleLine(flashPtr, i, true, alignment);
+}
+
+
+// String with memory specifier
+bool Label::print(const char *text, bool progmem) {
+    uint16_t i = 0;
+    if(progmem)
+    while(pgm_read_byte(&(text[++i])));
+    else
+    while(text[++i]);
+    return printSingleLine(text, i, progmem, alignment);
+}
+
+
+// single character
+bool Label::print(char c) {
+    return printSingleLine(&c, 1, false, alignment);
+}
+
+
+
+
 // # Print numbers #
 
 // Integers
@@ -293,8 +333,6 @@ void Label::setInfinite(bool enable, bool emptyLine) {
 
 
 
-// ################################ PRIVATE ################################# //
-
 
 // Print: base function taking a char array of given length (not a C string)
 bool Label::print(const char text[], uint16_t length, bool progmem) {
@@ -374,10 +412,12 @@ bool Label::print(const char text[], uint16_t length, bool progmem) {
 }
 
 
+// ################################ PRIVATE ################################# //
+
 // Print a string of characters and spaces until the end of the line is reached
 // This function allows to align simple text on the center and right side of the
 // label, but doesn't compute action characters
-bool Label::printSingleLine(const char text[], uint16_t length, bool progmem, bool singleLine, Alignment alignment) {
+bool Label::printSingleLine(const char text[], uint16_t length, bool progmem, Alignment alignment) {
 
     // if the string is empty
     if(!text[0]) return true;

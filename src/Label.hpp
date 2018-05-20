@@ -131,6 +131,32 @@ public:
     bool print(char c);
 
 
+    //! Print a string on a single line
+    /*!
+     * This function prints some text on one line. It mostly behaves like
+     * `print(const char *)` with three differences:
+     *
+     * - an additional argument, `alignment`, may be given to align the text on
+     *   the right, the centre or the left (default) of the label.
+     * - "action characters" (\r, \t, \n) are not supported and will be printed
+     *   as an unknown character (a black rectangle)
+     * - if the text doesn't fit in the label and there is some space after the
+     *   last entirely printed word, that space will be filled with the first
+     *   characters of the next word (the `print()` functions would leave it
+     *   clear)
+     */
+    bool printSingleLine(const char * text, Alignment alignment =  Alignment::left);
+
+    //! @see `printSingleLine(const char *, Alignment)` and `print(const char *, bool);
+    bool printSingleLine(const char * text, bool progmem, Alignment alignment =  Alignment::left);
+
+    //! @see `printSingleLine(const char *, Alignment)` and `print(const __FlashStringHelper *);`
+    bool printSingleLine(const __FlashStringHelper * text, Alignment alignment =  Alignment::left);
+
+    //! @see `printSingleLine(const char *, Alignment)` and `print(char)`
+    bool printSingleLine(char c, Alignment alignment =  Alignment::left);
+
+
     //! Print an integer number
     /* @param base The base to show the number. For base 16 the '0x' symbol will
     be prepended unless the number is negative.
@@ -162,6 +188,14 @@ public:
     //! same as above
     bool print(double n, uint8_t fractDigits = 2, uint8_t minIntDigits = 0);
 
+    //! Print a char array of given lenght on the screen.
+    /*! @see write(char text[])
+    @param text A char array containing the text to print. NULL characters
+    ('\0') will be ignored.
+    @param length Lengt of the text array.
+    @param progmem Set to true if the `text` is stored in Flash memory (not RAM)
+    */
+    bool print(const char text[], uint16_t length, bool progmem);
 
     //! Clear the label
     /*! The cursor will be moved to (0,0)
@@ -303,7 +337,7 @@ private:
     // Print a string of characters and spaces until the end of the line is reached
     // This function allows to align simple text on the center and right side of the
     // label, but doesn't compute action characters
-    bool printSingleLine(const char text[], uint16_t length, bool progmem, bool singleLine, Alignment alignment);
+    bool printSingleLine(const char text[], uint16_t length, bool progmem, Alignment alignment);
 
 
 
