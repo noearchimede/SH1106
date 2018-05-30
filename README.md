@@ -8,6 +8,8 @@ Arduino Driver for SH1106 OLED Controller
 
 ---
 
+Part of this code is based on a library written by Rick Overhorst whose most updated version is available on [this Github repository](https://github.com/rso16/SH1106).
+
 The SH1106 library provides useful functions to write text and images to a
 display controlled by an SH1106 OLED driver storing as little data as possible
 on the microcontroller (no buffer is required).
@@ -20,9 +22,6 @@ The library is structured as follows:
 1. User classes: *Label* and *Image*
 2. SH1106 driver class: *SH1106_driver*
 3. SH1106 interface classes: *SH1106_interfaces* -> *SH1106_I2C*, ...
-
-
-This code is based on a library written by Rick Overhorst. Its most updated version is available on [this Github repository](https://github.com/rso16/SH1106).
 
 ---
 
