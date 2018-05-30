@@ -22,6 +22,8 @@ The library is structured as follows:
 3. SH1106 interface classes: *SH1106_interfaces* -> *SH1106_I2C*, ...
 
 
+This code is based on a library written by Rick Overhorst. Its most updated version is available on [this Github repository](https://github.com/rso16/SH1106).
+
 ---
 
 The *Label* class provides the ability to write any ASCII character and some
