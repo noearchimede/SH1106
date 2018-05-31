@@ -3,6 +3,10 @@
 #include "Label.hpp"
 
 
+// Static member initialization
+PageFont font;
+
+
 Label::Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage)
 :
 // Make the frame two bytes less wide to allow a one-pixel margin on each side

@@ -401,7 +401,7 @@ private:
     // Reference to an instance of the display driver
     SH1106_driver & driver;
     // Instance of the class used to render characters
-    PageFont font;
+    static PageFont font;
 
     // Information about the frame of the label
     struct Frame {
