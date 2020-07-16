@@ -4,7 +4,7 @@
 
 
 // Static member initialization
-PageFont font;
+PageFont Label::font;
 
 
 Label::Label(SH1106_driver & display, uint8_t width, uint8_t height, uint8_t startColumn, uint8_t startPage)
